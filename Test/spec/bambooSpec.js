@@ -14,8 +14,10 @@ describe( "Bamboo Library", function () {
 		});
 
 		it("construct with bambooID", function () {
-			bambooSet = new bamboo.Dataset({ id: testData.id });
-			expect(bambooSet.id).not.toEqual(null);
+			bambooSet = new bamboo.Dataset({ url: testData.CSVFile });
+            firstID = bambooSet.id;
+            bambooSet2 = new bamboo.Dataset({ id: firstID });
+			expect(bambooSet2.id).toEqual(firstID);
 		});
 
 		it("construct with pathToLocalFile", function () {
