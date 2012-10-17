@@ -170,6 +170,14 @@ describe( "Bamboo Library", function () {
 	});
 
 	describe(" Test Summary", function () {
+		it("summary : with none query, none group", function () {
+		});
+
+		it("summary : with one query, none group", function () {
+		});
+
+		it("summary : with none query, one group", function () {
+		});
 	});
 
 	describe(" Test Info", function () {
