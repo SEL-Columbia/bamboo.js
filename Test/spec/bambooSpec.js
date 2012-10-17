@@ -169,7 +169,14 @@ describe( "Bamboo Library", function () {
 		});
 	});
 
+	describe(" Test Summary", function () {
+	});
 
+	describe(" Test Info", function () {
+	});
+
+	describe(" Test UpdateData", function () {
+	})
 });
 
 
