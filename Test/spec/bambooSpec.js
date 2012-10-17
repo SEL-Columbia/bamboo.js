@@ -1,5 +1,5 @@
 describe( "Bamboo Library", function () {
-	
+        
 	var testData = {};
 	testData["id"] = "1cece817bae04825874669c815f33f99";
 	testData["CSVFile"] = "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1";
@@ -171,6 +171,7 @@ describe( "Bamboo Library", function () {
 
 	describe(" Test Summary", function () {
 		it("summary : with none query, none group", function () {
+			bambooSet = new bamboo.Dataset({ id: testData.id });
 		});
 
 		it("summary : with one query, none group", function () {
@@ -184,7 +185,10 @@ describe( "Bamboo Library", function () {
 	});
 
 	describe(" Test UpdateData", function () {
-	})
+	});
+
+	/* TODO: delete 
+	
 });
 
 
