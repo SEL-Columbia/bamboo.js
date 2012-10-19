@@ -255,12 +255,12 @@ describe( "Bamboo Library", function () {
     testData["update"].push(test);
 
     describe(" Test UpdateData", function () {
-        it("updateData : one row"){
+        it("updateData : one row", function () {
             bambooSet = new bamboo.Dataset({ id: testData.id });
             bambooSet.updateData(testData["update"][0].rows);
             expect(bambooSet.getColumns(testData["update"][0].columns)).toEqual(testData["update"][0].result);
         });
-        it("updateData : multiple rows"){
+        it("updateData : multiple rows", function () {
             bambooSet = new bamboo.Dataset({ id: testData.id });
             bambooSet.updateData(testData["update"][0].rows);
             expect(bambooSet.getColumns(testData["update"][0].columns)).toEqual(testData["update"][0].result);
