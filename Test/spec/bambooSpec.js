@@ -16,6 +16,7 @@ describe( "Bamboo Library", function () {
         it("construct with bambooID", function () {
             bambooSet = new bamboo.Dataset({ url: testData.CSVFile });
             firstID = bambooSet.id;
+            expect(firstID).not.toEqual(null);
             bambooSet2 = new bamboo.Dataset({ id: firstID });
             expect(bambooSet2.id).toEqual(firstID);
         });
