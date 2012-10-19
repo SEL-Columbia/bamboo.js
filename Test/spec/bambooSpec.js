@@ -199,7 +199,7 @@ describe( "Bamboo Library", function () {
     var test = {};
     test["columnName"] = ["grade"];
     test["query"] = {};
-    test{"groups"] = ["name", "sex"];
+    test["groups"] = ["name", "sex"];
     test["result"] = {"name,sex": {"(u'Student7', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student13', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student2', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}}, "(u'Student4', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 3.0, "max": 3.0, "50%": 3.0, "25%": 3.0, "75%": 3.0, "mean": 3.0}}}, "(u'Student5', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}}, "(u'Student1', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 1.0, "max": 1.0, "50%": 1.0, "25%": 1.0, "75%": 1.0, "mean": 1.0}}}, "(u'Student11', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student10', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student6', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}}, "(u'Student12', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student14', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 1.0, "max": 1.0, "50%": 1.0, "25%": 1.0, "75%": 1.0, "mean": 1.0}}}, "(u'Student8', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student3', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 3.0, "max": 3.0, "50%": 3.0, "25%": 3.0, "75%": 3.0, "mean": 3.0}}}, "(u'Student9', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}}};
     testData["summary"].push(test);
 
@@ -231,10 +231,40 @@ describe( "Bamboo Library", function () {
         });
     });
 
+    testData["info"] = {"num_rows": 14, "attribution": "", "description": "", "license": "", "num_columns": 4, "updated_at": "2012-10-12 20:57:41", "created_at": "2012-10-12 20:57:41", "schema": {"grade": {"olap_type": "measure", "simpletype": "integer", "label": "grade"}, "sex": {"olap_type": "dimension", "cardinality": 2, "simpletype": "string", "label": "sex"}, "name": {"olap_type": "dimension", "cardinality": 14, "simpletype": "string", "label": "name"}, "income": {"olap_type": "measure", "simpletype": "integer", "label": "income"}}, "id": "1cece817bae04825874669c815f33f99", "label": ""}; 
+    
     describe(" Test Info", function () {
+        it("show info", function () {
+            bambooSet = new bamboo.Dataset({ id: testData.id });
+            expect(bambooSet.info()).toEqual(testData["info"]);
+        });
     });
 
+    testData["update"] = [];
+    var test = {};
+    test["rows"] = [{"name": "student20", "sex": "M"}];
+    test["columns"] = ["name", "sex", "grade", "income"];
+    /* TODO: fill in the result, wait for bamboo to fix the error */
+    test["result"] = {};
+    testData["update"].push(test);
+    var test = {};
+    test["rows"] = [{"name": "student20", "sex": "M"}, {"name": "student21", "grade": 3, "sex": "F"}];
+    test["columns"] = ["name", "sex", "grade", "income"];
+    /* TODO: fill in the result, wait for bamboo to fix the error */
+    test["result"] = {};
+    testData["update"].push(test);
+
     describe(" Test UpdateData", function () {
+        it("updateData : one row"){
+            bambooSet = new bamboo.Dataset({ id: testData.id });
+            bambooSet.updateData(testData["update"][0].rows);
+            expect(bambooSet.getColumns(testData["update"][0].columns)).toEqual(testData["update"][0].result);
+        });
+        it("updateData : multiple rows"){
+            bambooSet = new bamboo.Dataset({ id: testData.id });
+            bambooSet.updateData(testData["update"][0].rows);
+            expect(bambooSet.getColumns(testData["update"][0].columns)).toEqual(testData["update"][0].result);
+        });
     });
 
     /* TODO: delete the test datasets in the bamboo server */ 
