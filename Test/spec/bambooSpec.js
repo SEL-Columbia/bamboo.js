@@ -9,20 +9,24 @@ describe( "Bamboo Library", function () {
     describe( "Test Constructor", function () {
 
         it("construct with urlToCSVFile", function () {
-            bambooSet = new bamboo.Dataset({ url: testData.CSVFile });
+            bam = new bamboo();
+            bambooSet = bam.Dataset({ url: testData.CSVFile });
             expect(bambooSet.id).not.toEqual(null);
         });
 
         it("construct with bambooID", function () {
-            bambooSet = new bamboo.Dataset({ url: testData.CSVFile });
+            bam = new bamboo();
+            bambooSet = bam.Dataset({ url: testData.CSVFile });
             firstID = bambooSet.id;
             expect(firstID).not.toEqual(null);
-            bambooSet2 = new bamboo.Dataset({ id: firstID });
+            bam2 = new bamboo();
+            bambooSet2 = bam.Dataset({ id: firstID });
             expect(bambooSet2.id).toEqual(firstID);
         });
 
         it("construct with pathToLocalFile", function () {
-            bambooSet = new bamboo.Dataset({ path: testData.localFile });
+            bam = new bamboo();
+            bambooSet = bam.Dataset({ path: testData.localFile });
             expect(bambooSet.id).not.toEqual(null);
         });
     });

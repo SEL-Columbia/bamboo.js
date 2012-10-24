@@ -1,15 +1,15 @@
 class bamboo
-    Dataset: (file) ->
-        if file.substring(0, 7) is "http://"
+    Dataset: (data) ->
+        if data.hasOwnProperty('url')
             ###
             USE AJAX TO SEND THE REQUEST
             HOW TO SOLVE THE Access-Control-Allow-Origin PROBLEM?
             ###
             alert "csvFile"
-        else if file.substring(0, 7) is "file://"
-            alert "upload file"
-        else
+        else if data.hasOwnProperty('id')
             alert "bamboo ID"
+        else
+            alert "upload file"
 
 
 
