@@ -12,6 +12,7 @@ describe( "Bamboo Library", function () {
             bam = new bamboo();
             bambooSet = bam.Dataset({ url: testData.CSVFile });
             expect(bambooSet.id).not.toEqual(null);
+            // perform some real operation (like info()) to make sure object created properly
         });
 
         it("construct with bambooID", function () {
@@ -22,35 +23,55 @@ describe( "Bamboo Library", function () {
             bam2 = new bamboo();
             bambooSet2 = bam.Dataset({ id: firstID });
             expect(bambooSet2.id).toEqual(firstID);
+            // compare some server result (like info()) to make sure object created properly 
         });
 
         it("construct with pathToLocalFile", function () {
             bam = new bamboo();
             bambooSet = bam.Dataset({ path: testData.localFile });
             expect(bambooSet.id).not.toEqual(null);
+            // perform some real operation (like info()) to make sure object created properly
         });
     });
 
-    testData["getData"] = [];
-    var test = {};
-    test["columns"] = ["grade"];
-    test["result"] = [{"grade": 4}, {"grade": 2}, {"grade": 4}, {"grade": 3}, {"grade": 2}, {"grade": 4}, {"grade": 3}, {"grade": 4}, {"grade": 4}, {"grade": 4}, {"grade": 1}, {"grade": 4}, {"grade": 1}, {"grade": 2}];
-    testData["getData"].push(test);
-    var test = {};
-    test["columns"] = ["name", "grade", "sex"];
-    test["result"] = [{"grade": 4, "sex": "F", "name": "Student10"}, {"grade": 2, "sex": "M", "name": "Student5"}, {"grade": 4, "sex": "M", "name": "Student13"}, {"grade": 3, "sex": "F", "name": "Student3"}, {"grade": 2, "sex": "M", "name": "Student6"}, {"grade": 4, "sex": "F", "name": "Student7"}, {"grade": 3, "sex": "F", "name": "Student4"}, {"grade": 4, "sex": "F", "name": "Student12"}, {"grade": 4, "sex": "F", "name": "Student9"}, {"grade": 4, "sex": "F", "name": "Student8"}, {"grade": 1, "sex": "M", "name": "Student1"}, {"grade": 4, "sex": "F", "name": "Student11"}, {"grade": 1, "sex": "M", "name": "Student14"}, {"grade": 2, "sex": "M", "name": "Student2"}];
-    testData["getData"].push(test);
+    testData = {
+        getData: [{
+            columns: ["grade"],
+            result: [{"grade": 4}, {"grade": 2}, {"grade": 4}, {"grade": 3}, 
+                     {"grade": 2}, {"grade": 4}, {"grade": 3}, {"grade": 4}, 
+                     {"grade": 4}, {"grade": 4}, {"grade": 1}, {"grade": 4}, 
+                     {"grade": 1}, {"grade": 2}]
+        }, {
+            columns: ["name", "grade", "sex"],
+            result: [{"grade": 4, "sex": "F", "name": "Student10"}, 
+                     {"grade": 2, "sex": "M", "name": "Student5"}, 
+                     {"grade": 4, "sex": "M", "name": "Student13"}, 
+                     {"grade": 3, "sex": "F", "name": "Student3"},
+                     {"grade": 2, "sex": "M", "name": "Student6"}, 
+                     {"grade": 4, "sex": "F", "name": "Student7"}, 
+                     {"grade": 3, "sex": "F", "name": "Student4"}, 
+                     {"grade": 4, "sex": "F", "name": "Student12"}, 
+                     {"grade": 4, "sex": "F", "name": "Student9"},
+                     {"grade": 4, "sex": "F", "name": "Student8"},
+                     {"grade": 1, "sex": "M", "name": "Student1"}, 
+                     {"grade": 4, "sex": "F", "name": "Student11"}, 
+                     {"grade": 1, "sex": "M", "name": "Student14"},
+                     {"grade": 2, "sex": "M", "name": "Student2"}]
+        }]
+    };
 
     describe( "Test getData", function () {        
 
         it("getData for one column", function () {
             bambooSet = new bamboo.Dataset({ id: testData.id });
-            expect(bambooSet.getData(testData["getData"][0].columns)).toEqual(testData["getData"][0].result);
+            var testObj = testData["getData"][0];
+            expect(bambooSet.getData(testObj.columns)).toEqual(testObj.result);
         });
 
-        it("getData for several column", function () {
+        it("getData for several columns", function () {
             bambooSet = new bamboo.Dataset({ id: testData.id });
-            expect(bambooSet.getData(testData["getData"][1].columns)).toEqual(testData["getData"][1].result);
+            var testObj = testData["getData"][1];
+            expect(bambooSet.getData(testObj.columns)).toEqual(testObj.result);
         });
     });
 
@@ -79,6 +100,7 @@ describe( "Bamboo Library", function () {
             bambooSet.addCalculation(testData["calculation"][1].formula);
             expect(bammbooSet.getData( testData["calculation"][1].columnName )).toEqual( testData["calculation"][1].result );
         });
+        // NOTE: would need to delete these stray calculations
     });
 
     describe( "Test RemoveCalculation", function () {
@@ -92,6 +114,7 @@ describe( "Bamboo Library", function () {
     });
 
     describe( "Test GetCalculation", function () {
+        // FOR NOW: add Calculations need to be done by external tool
         
         it("get calculation : when calculation dictionary has one column", function () {
             bambooSet = new bamboo.Dataset({ id: testData.id });
@@ -158,6 +181,7 @@ describe( "Bamboo Library", function () {
         /* not implemented by Bamboo yet */
     });
 
+    /* NEEDS re-write based on changed Bamboo.js API */
     describe(" Test GetAggregation", function () {
         it("get aggregation : when the aggregation dictionary has one element", function () {
             bambooSet = new bamboo.Dataset({ id: testData.id });
@@ -176,6 +200,7 @@ describe( "Bamboo Library", function () {
         });
     });
 
+    /* TODO: move this to a more succinct representation; if not into external files */
     testData["summary"] = [];
     var test = {};
     test["columnName"] = ["name", "sex", "grade", "income"];
@@ -212,7 +237,9 @@ describe( "Bamboo Library", function () {
     describe(" Test Summary", function () {
         it("summary : with none query, none group", function () {
             bambooSet = new bamboo.Dataset({ id: testData.id });
-            expect(bambooSet.summary(testData["summary"][0].columnName, testData["summary"][0].query, testData["summary"][0].groups)).toEqual(testData["summary"][0].result);
+            var testObj = testData["summary"][0]; /* TODO: propagate testObj creation through summary tests */
+            expect(bambooSet.summary(testObj.columnName, testObj.query, testObj.groups))
+                .toEqual(testObj.result);
         });
 
         it("summary : with one query, none group", function () {
