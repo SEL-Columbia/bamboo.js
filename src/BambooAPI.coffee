@@ -1,16 +1,18 @@
+$ = $ || throw new Error('jquery not included');
+
 class bamboo
+    constructor: () ->
+
     Dataset: (data) ->
-        if data.hasOwnProperty('url')
+        if 'url' of data
             ###
             USE AJAX TO SEND THE REQUEST
             HOW TO SOLVE THE Access-Control-Allow-Origin PROBLEM?
             ###
-            alert "csvFile"
-        else if data.hasOwnProperty('id')
-            alert "bamboo ID"
+            this.id = 'sjdiofjaosdf'
+            this
+        else if 'id' of data 
         else
-            alert "upload file"
-
 
 
 
