@@ -23,27 +23,26 @@ describe( "Bamboo Library", function () {
     describe( "Test Constructor", function () {
 
         it("construct with urlToCSVFile", function () {
-            bam = new bamboo();
-            bambooSet = bam.Dataset({ url: testData.CSVFile });
-            expect(bambooSet.id).not.toEqual(null);
+            bambooSet = new bamboo.Dataset({ url: testData.CSVFile });
+			expect(bambooSet.id).toBeDefined();
             // perform some real operation (like info()) to make sure object created properly
         });
 
         it("construct with bambooID", function () {
-            bam = new bamboo();
-            bambooSet = bam.Dataset({ url: testData.CSVFile });
+            bambooSet = new bamboo.Dataset({ url: testData.CSVFile });
             firstID = bambooSet.id;
-            expect(firstID).not.toEqual(null);
-            bam2 = new bamboo();
-            bambooSet2 = bam.Dataset({ id: firstID });
+            expect(firstID).toBeDefined();
+            console.log(firstID);
+            bambooSet2 = new bamboo.Dataset({ id: firstID });
             expect(bambooSet2.id).toEqual(firstID);
+            console.log(bambooSet2)
             // compare some server result (like info()) to make sure object created properly 
         });
 
         it("construct with pathToLocalFile", function () {
             bam = new bamboo();
             bambooSet = bam.Dataset({ path: testData.localFile });
-            expect(bambooSet.id).not.toEqual(null);
+            expect(bambooSet.id).toBeDefined();
             // perform some real operation (like info()) to make sure object created properly
         });
     });
@@ -780,7 +779,7 @@ describe( "Bamboo Library", function () {
     testData["summary"] = [{
         columnName: ["name", "sex", "grade", "income"],
         query: [],
-        groups: [];
+        groups: [],
         result: {
             "grade": {
                 "summary": {
