@@ -459,46 +459,1085 @@ describe( "Bamboo Library", function () {
                         "25%": 70.0, 
                         "75%": 70.0, 
                         "mean": 70.0
+                    }
+                }
+            }, 
+            "(u'M', u'Student5')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 2.0, 
+                        "max": 2.0, 
+                        "50%": 2.0, 
+                        "25%": 2.0, 
+                        "75%": 2.0, 
+                        "mean": 2.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 50.0, 
+                        "max": 50.0, 
+                        "50%": 50.0, 
+                        "25%": 50.0, 
+                        "75%": 50.0, 
+                        "mean": 50.0
+                    }
+                }
+            }, 
+            "(u'M', u'Student13')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 4.0, 
+                        "max": 4.0, 
+                        "50%": 4.0, 
+                        "25%": 4.0, 
+                        "75%": 4.0, 
+                        "mean": 4.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 70.0, 
+                        "max": 70.0, 
+                        "50%": 70.0, 
+                        "25%": 70.0, 
+                        "75%": 70.0, 
+                        "mean": 70.0
+                    }
+                }
+            }, 
+            "(u'F', u'Student3')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 3.0, 
+                        "max": 3.0, 
+                        "50%": 3.0, 
+                        "25%": 3.0, 
+                        "75%": 3.0, 
+                        "mean": 3.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 50.0, 
+                        "max": 50.0, 
+                        "50%": 50.0, 
+                        "25%": 50.0, 
+                        "75%": 50.0, 
+                        "mean": 50.0
+                    }
+                }
+            }, 
+            "(u'M', u'Student1')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 1.0, 
+                        "max": 1.0, 
+                        "50%": 1.0, 
+                        "25%": 1.0, 
+                        "75%": 1.0, 
+                        "mean": 1.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 30.0, 
+                        "max": 30.0, 
+                        "50%": 30.0, 
+                        "25%": 30.0, 
+                        "75%": 30.0, 
+                        "mean": 30.0
+                    }
+                }
+            }, 
+            "(u'F', u'Student10')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 4.0, 
+                        "max": 4.0, 
+                        "50%": 4.0, 
+                        "25%": 4.0, 
+                        "75%": 4.0, 
+                        "mean": 4.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 60.0, 
+                        "max": 60.0, 
+                        "50%": 60.0, 
+                        "25%": 60.0, 
+                        "75%": 60.0, 
+                        "mean": 60.0
+                    }
+                }
+            }, 
+            "(u'F', u'Student11')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 4.0, 
+                        "max": 4.0, 
+                        "50%": 4.0, 
+                        "25%": 4.0, 
+                        "75%": 4.0, 
+                        "mean": 4.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 60.0, 
+                        "max": 60.0, 
+                        "50%": 60.0, 
+                        "25%": 60.0, 
+                        "75%": 60.0, 
+                        "mean": 60.0
+                    }
+                }
+            }, 
+            "(u'F', u'Student8')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 4.0, 
+                        "max": 4.0, 
+                        "50%": 4.0, 
+                        "25%": 4.0, 
+                        "75%": 4.0, 
+                        "mean": 4.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 50.0, 
+                        "max": 50.0, 
+                        "50%": 50.0, 
+                        "25%": 50.0, 
+                        "75%": 50.0, 
+                        "mean": 50.0
+                    }
+                }
+            }, 
+            "(u'F', u'Student7')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 4.0, 
+                        "max": 4.0, 
+                        "50%": 4.0, 
+                        "25%": 4.0, 
+                        "75%": 4.0, 
+                        "mean": 4.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 50.0, 
+                        "max": 50.0, 
+                        "50%": 50.0, 
+                        "25%": 50.0, 
+                        "75%": 50.0, 
+                        "mean": 50.0
+                    }
+                }
+            }, 
+            "(u'M', u'Student14')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 1.0, 
+                        "max": 1.0, 
+                        "50%": 1.0, 
+                        "25%": 1.0, 
+                        "75%": 1.0, 
+                        "mean": 1.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 20.0, 
+                        "max": 20.0, 
+                        "50%": 20.0, 
+                        "25%": 20.0, 
+                        "75%": 20.0, 
+                        "mean": 20.0
+                    }
+                }
+            }, 
+            "(u'F', u'Student9')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 4.0, 
+                        "max": 4.0, 
+                        "50%": 4.0, 
+                        "25%": 4.0, 
+                        "75%": 4.0, 
+                        "mean": 4.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 50.0, 
+                        "max": 50.0, 
+                        "50%": 50.0, 
+                        "25%": 50.0, 
+                        "75%": 50.0, 
+                        "mean": 50.0
+                    }
+                }
+            }, 
+            "(u'M', u'Student2')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 2.0, 
+                        "max": 2.0, 
+                        "50%": 2.0, 
+                        "25%": 2.0, 
+                        "75%": 2.0, 
+                        "mean": 2.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 50.0, 
+                        "max": 50.0, 
+                        "50%": 50.0, 
+                        "25%": 50.0, 
+                        "75%": 50.0, 
+                        "mean": 50.0
+                    }
+                }
+            }, 
+            "(u'M', u'Student6')": {
+                "grade": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 2.0, 
+                        "max": 2.0, 
+                        "50%": 2.0, 
+                        "25%": 2.0, 
+                        "75%": 2.0, 
+                        "mean": 2.0
+                    }
+                }, 
+                "income": {
+                    "summary": {
+                        "count": 1.0, 
+                        "std": "null", 
+                        "min": 60.0, 
+                        "max": 60.0, 
+                        "50%": 60.0, 
+                        "25%": 60.0, 
+                        "75%": 60.0, 
+                        "mean": 60.0
+                    }
+                }
+            }
+        }
+    }}];
+    
+    testData["summary"] = [{
+        columnName: ["name", "sex", "grade", "income"],
+        query: [],
+        groups: [];
+        result: {
+            "grade": {
+                "summary": {
+                    "count": 14.0, 
+                    "std": 1.1766968108291043, 
+                    "min": 1.0, 
+                    "max": 4.0, 
+                    "50%": 3.5, 
+                    "25%": 2.0, 
+                    "75%": 4.0, 
+                    "mean": 3.0
+                }
+            }, 
+            "income": {
+                "summary": {
+                    "count": 14.0, 
+                    "std": 13.506205330054128, 
+                    "min": 20.0, 
+                    "max": 70.0, 
+                    "50%": 50.0, 
+                    "25%": 50.0, 
+                    "75%": 60.0, 
+                    "mean": 51.42857142857143
+                }
+            }, 
+            "name": {
+                "summary": {
+                    "Student9": 1, 
+                    "Student8": 1, 
+                    "Student3": 1, 
+                    "Student2": 1, 
+                    "Student1": 1, 
+                    "Student7": 1, 
+                    "Student6": 1, 
+                    "Student5": 1, 
+                    "Student4": 1, 
+                    "Student14": 1, 
+                    "Student13": 1, 
+                    "Student12": 1, 
+                    "Student11": 1, 
+                    "Student10": 1
+                }
+            }, 
+            "sex": {
+                "summary": {
+                    "M": 6, 
+                    "F": 8
+                }
+            }
+        }
+    },{
+        "columnName": ["name", "sex", "grade", "income"],
+        "query": {"sex": "F"},
+        "group": [],
+        "result": {
+            "grade": {
+                "summary": {
+                    "count": 8.0, 
+                    "std": 0.46291004988627571, 
+                    "min": 3.0, 
+                    "max": 4.0, 
+                    "50%": 4.0, 
+                    "25%": 3.75, 
+                    "75%": 4.0, 
+                    "mean": 3.75
+                }
+            }, 
+            "sex": {
+                "summary": {
+                    "F": 8
+                }
+            }, 
+            "name": {
+                "summary": {
+                    "Student9": 1, 
+                    "Student8": 1, 
+                    "Student3": 1, 
+                    "Student7": 1, 
+                    "Student4": 1, 
+                    "Student12": 1, 
+                    "Student11": 1, 
+                    "Student10": 1
+                }
+            }, 
+            "income": {
+                "summary": {
+                    "count": 8.0, 
+                    "std": 7.5592894601845444, 
+                    "min": 50.0, 
+                    "max": 70.0, 
+                    "50%": 50.0, 
+                    "25%": 50.0, 
+                    "75%": 60.0, 
+                    "mean": 55.0
+                }
+            }
+        }
+    }, {
+        "columnName": ["name", "sex", "grade", "income"],
+        "query": {},
+        "group": ["sex"],
+        "result": {
+            "sex": {
+                "M": {
+                    "grade": {
+                        "summary": {
+                            "count": 6.0, 
+                            "std": 1.0954451150103321, 
+                            "min": 1.0, 
+                            "max": 4.0, 
+                            "50%": 2.0, 
+                            "25%": 1.25, 
+                            "75%": 2.0, 
+                            "mean": 2.0
+                        }
+                    }, 
+                    "name": {
+                        "summary": {
+                            "Student2": 1, 
+                            "Student1": 1, 
+                            "Student6": 1, 
+                            "Student5": 1, 
+                            "Student14": 1, 
+                            "Student13": 1
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 6.0, 
+                            "std": 18.618986725025259, 
+                            "min": 20.0, 
+                            "max": 70.0, 
+                            "50%": 50.0, 
+                            "25%": 35.0, 
+                            "75%": 57.5, 
+                            "mean": 46.666666666666664
                         }
                     }
                 }, 
-            "(u'M', u'Student5')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student13')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 70.0, "max": 70.0, "50%": 70.0, "25%": 70.0, "75%": 70.0, "mean": 70.0}}}, "(u'F', u'Student3')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 3.0, "max": 3.0, "50%": 3.0, "25%": 3.0, "75%": 3.0, "mean": 3.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student1')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 1.0, "max": 1.0, "50%": 1.0, "25%": 1.0, "75%": 1.0, "mean": 1.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 30.0, "max": 30.0, "50%": 30.0, "25%": 30.0, "75%": 30.0, "mean": 30.0}}}, "(u'F', u'Student10')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 60.0, "max": 60.0, "50%": 60.0, "25%": 60.0, "75%": 60.0, "mean": 60.0}}}, "(u'F', u'Student11')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 60.0, "max": 60.0, "50%": 60.0, "25%": 60.0, "75%": 60.0, "mean": 60.0}}}, "(u'F', u'Student8')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'F', u'Student7')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student14')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 1.0, "max": 1.0, "50%": 1.0, "25%": 1.0, "75%": 1.0, "mean": 1.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 20.0, "max": 20.0, "50%": 20.0, "25%": 20.0, "75%": 20.0, "mean": 20.0}}}, "(u'F', u'Student9')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student2')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student6')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 60.0, "max": 60.0, "50%": 60.0, "25%": 60.0, "75%": 60.0, "mean": 60.0}}}}};
-
+                "F": {
+                    "grade": {
+                        "summary": {
+                            "count": 8.0, 
+                            "std": 0.46291004988627571, 
+                            "min": 3.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 3.75, 
+                            "75%": 4.0, 
+                            "mean": 3.75
+                        }
+                    }, 
+                    "name": {
+                        "summary": {
+                            "Student9": 1, 
+                            "Student8": 1, 
+                            "Student3": 1, 
+                            "Student7": 1, 
+                            "Student4": 1, 
+                            "Student12": 1, 
+                            "Student11": 1, 
+                            "Student10": 1
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 8.0, 
+                            "std": 7.5592894601845444, 
+                            "min": 50.0, 
+                            "max": 70.0, 
+                            "50%": 50.0, 
+                            "25%": 50.0, 
+                            "75%": 60.0, 
+                            "mean": 55.0
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "columnName": ["name", "sex", "grade", "income"],
+        "query": {},
+        "groups": ["name", "sex"],
+        "result": {
+            "sex,name": {
+                "(u'F', u'Student4')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 3.0, 
+                            "max": 3.0, 
+                            "50%": 3.0, 
+                            "25%": 3.0, 
+                            "75%": 3.0, 
+                            "mean": 3.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 50.0, 
+                            "max": 50.0, 
+                            "50%": 50.0, 
+                            "25%": 50.0, 
+                            "75%": 50.0, 
+                            "mean": 50.0
+                        }
+                    }
+                }, 
+                "(u'F', u'Student12')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 70.0, 
+                            "max": 70.0, 
+                            "50%": 70.0, 
+                            "25%": 70.0, 
+                            "75%": 70.0, 
+                            "mean": 70.0
+                        }
+                    }
+                }, 
+                "(u'M', u'Student5')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 2.0, 
+                            "max": 2.0, 
+                            "50%": 2.0, 
+                            "25%": 2.0, 
+                            "75%": 2.0, 
+                            "mean": 2.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 50.0, 
+                            "max": 50.0, 
+                            "50%": 50.0, 
+                            "25%": 50.0, 
+                            "75%": 50.0, 
+                            "mean": 50.0
+                        }
+                    }
+                }, 
+                "(u'M', u'Student13')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 70.0, 
+                            "max": 70.0, 
+                            "50%": 70.0, 
+                            "25%": 70.0, 
+                            "75%": 70.0, 
+                            "mean": 70.0
+                        }
+                    }
+                }, 
+                "(u'F', u'Student3')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 3.0, 
+                            "max": 3.0, 
+                            "50%": 3.0, 
+                            "25%": 3.0, 
+                            "75%": 3.0, 
+                            "mean": 3.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 50.0, 
+                            "max": 50.0, 
+                            "50%": 50.0, 
+                            "25%": 50.0, 
+                            "75%": 50.0, 
+                            "mean": 50.0
+                        }
+                    }
+                }, 
+                "(u'M', u'Student1')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 1.0, 
+                            "max": 1.0, 
+                            "50%": 1.0, 
+                            "25%": 1.0, 
+                            "75%": 1.0, 
+                            "mean": 1.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 30.0, 
+                            "max": 30.0, 
+                            "50%": 30.0, 
+                            "25%": 30.0, 
+                            "75%": 30.0, 
+                            "mean": 30.0
+                        }
+                    }
+                }, 
+                "(u'F', u'Student10')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 60.0, 
+                            "max": 60.0, 
+                            "50%": 60.0, 
+                            "25%": 60.0, 
+                            "75%": 60.0, 
+                            "mean": 60.0
+                        }
+                    }
+                }, 
+                "(u'F', u'Student11')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 60.0, 
+                            "max": 60.0, 
+                            "50%": 60.0, 
+                            "25%": 60.0, 
+                            "75%": 60.0, 
+                            "mean": 60.0
+                        }
+                    }
+                }, 
+                "(u'F', u'Student8')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 50.0, 
+                            "max": 50.0, 
+                            "50%": 50.0, 
+                            "25%": 50.0, 
+                            "75%": 50.0, 
+                            "mean": 50.0
+                        }
+                    }
+                }, 
+                "(u'F', u'Student7')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null",
+                            "min": 50.0, 
+                            "max": 50.0, 
+                            "50%": 50.0, 
+                            "25%": 50.0, 
+                            "75%": 50.0, 
+                            "mean": 50.0
+                        }
+                    }
+                }, 
+                "(u'M', u'Student14')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 1.0, 
+                            "max": 1.0, 
+                            "50%": 1.0, 
+                            "25%": 1.0, 
+                            "75%": 1.0, 
+                            "mean": 1.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 20.0, 
+                            "max": 20.0, 
+                            "50%": 20.0, 
+                            "25%": 20.0, 
+                            "75%": 20.0, 
+                            "mean": 20.0
+                        }
+                    }
+                }, 
+                "(u'F', u'Student9')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 50.0, 
+                            "max": 50.0, 
+                            "50%": 50.0, 
+                            "25%": 50.0, 
+                            "75%": 50.0, 
+                            "mean": 50.0
+                        }
+                    }
+                }, 
+                "(u'M', u'Student2')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 2.0, 
+                            "max": 2.0, 
+                            "50%": 2.0, 
+                            "25%": 2.0, 
+                            "75%": 2.0, 
+                            "mean": 2.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 50.0, 
+                            "max": 50.0, 
+                            "50%": 50.0, 
+                            "25%": 50.0, 
+                            "75%": 50.0, 
+                            "mean": 50.0
+                        }
+                    }
+                }, 
+                "(u'M', u'Student6')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 2.0, 
+                            "max": 2.0, 
+                            "50%": 2.0, 
+                            "25%": 2.0, 
+                            "75%": 2.0, 
+                            "mean": 2.0
+                        }
+                    }, 
+                    "income": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 60.0, 
+                            "max": 60.0, 
+                            "50%": 60.0, 
+                            "25%": 60.0, 
+                            "75%": 60.0, 
+                            "mean": 60.0
+                        }
+                    }
+                }
+            }
+        }
+    },{
+        "columnName": ["grade"],
+        "query": {},
+        "groups": ["name", "sex"],
+        "result": {
+            "name,sex": {
+                "(u'Student7', u'F')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }
+                }, 
+                "(u'Student13', u'M')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }
+                }, 
+                "(u'Student2', u'M')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 2.0, 
+                            "max": 2.0, 
+                            "50%": 2.0, 
+                            "25%": 2.0, 
+                            "75%": 2.0, 
+                            "mean": 2.0
+                        }
+                    }
+                }, 
+                "(u'Student4', u'F')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 3.0, 
+                            "max": 3.0, 
+                            "50%": 3.0, 
+                            "25%": 3.0, 
+                            "75%": 3.0, 
+                            "mean": 3.0
+                        }
+                    }
+                }, 
+                "(u'Student5', u'M')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 2.0, 
+                            "max": 2.0, 
+                            "50%": 2.0, 
+                            "25%": 2.0, 
+                            "75%": 2.0, 
+                            "mean": 2.0
+                        }
+                    }
+                }, 
+                "(u'Student1', u'M')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 1.0, 
+                            "max": 1.0, 
+                            "50%": 1.0, 
+                            "25%": 1.0, 
+                            "75%": 1.0, 
+                            "mean": 1.0
+                        }
+                    }
+                }, 
+                "(u'Student11', u'F')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }
+                }, 
+                "(u'Student10', u'F')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }
+                }, 
+                "(u'Student6', u'M')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 2.0, 
+                            "max": 2.0, 
+                            "50%": 2.0, 
+                            "25%": 2.0, 
+                            "75%": 2.0, 
+                            "mean": 2.0
+                        }
+                    }
+                }, 
+                "(u'Student12', u'F')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }
+                }, 
+                "(u'Student14', u'M')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 1.0, 
+                            "max": 1.0, 
+                            "50%": 1.0, 
+                            "25%": 1.0, 
+                            "75%": 1.0, 
+                            "mean": 1.0
+                        }
+                    }
+                }, 
+                "(u'Student8', u'F')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }
+                }, 
+                "(u'Student3', u'F')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 3.0, 
+                            "max": 3.0, 
+                            "50%": 3.0, 
+                            "25%": 3.0, 
+                            "75%": 3.0, 
+                            "mean": 3.0
+                        }
+                    }
+                }, 
+                "(u'Student9', u'F')": {
+                    "grade": {
+                        "summary": {
+                            "count": 1.0, 
+                            "std": "null", 
+                            "min": 4.0, 
+                            "max": 4.0, 
+                            "50%": 4.0, 
+                            "25%": 4.0, 
+                            "75%": 4.0, 
+                            "mean": 4.0
+                        }
+                    }
+                }
+            }
+        }
     }];
     
-    testData["summary"] = [];
-    var test = {};
-    test["columnName"] = ["name", "sex", "grade", "income"];
-    test["query"] = {};
-    test["groups"] = [];
-    test["result"] = {"grade": {"summary": {"count": 14.0, "std": 1.1766968108291043, "min": 1.0, "max": 4.0, "50%": 3.5, "25%": 2.0, "75%": 4.0, "mean": 3.0}}, "income": {"summary": {"count": 14.0, "std": 13.506205330054128, "min": 20.0, "max": 70.0, "50%": 50.0, "25%": 50.0, "75%": 60.0, "mean": 51.42857142857143}}, "name": {"summary": {"Student9": 1, "Student8": 1, "Student3": 1, "Student2": 1, "Student1": 1, "Student7": 1, "Student6": 1, "Student5": 1, "Student4": 1, "Student14": 1, "Student13": 1, "Student12": 1, "Student11": 1, "Student10": 1}}, "sex": {"summary": {"M": 6, "F": 8}}};
-    testData["summary"].push(test);
-    var test = {};
-    test["columnName"] = ["name", "sex", "grade", "income"];
-    test["query"] = {"sex": "F"};
-    test["group"] = [];
-    test["result"] = {"grade": {"summary": {"count": 8.0, "std": 0.46291004988627571, "min": 3.0, "max": 4.0, "50%": 4.0, "25%": 3.75, "75%": 4.0, "mean": 3.75}}, "sex": {"summary": {"F": 8}}, "name": {"summary": {"Student9": 1, "Student8": 1, "Student3": 1, "Student7": 1, "Student4": 1, "Student12": 1, "Student11": 1, "Student10": 1}}, "income": {"summary": {"count": 8.0, "std": 7.5592894601845444, "min": 50.0, "max": 70.0, "50%": 50.0, "25%": 50.0, "75%": 60.0, "mean": 55.0}}};
-    testData["summary"].push(test);
-    var test = {};
-    test["columnName"] = ["name", "sex", "grade", "income"];
-    test["query"] = {};
-    test["group"] = ["sex"];
-    test["result"] = {"sex": {"M": {"grade": {"summary": {"count": 6.0, "std": 1.0954451150103321, "min": 1.0, "max": 4.0, "50%": 2.0, "25%": 1.25, "75%": 2.0, "mean": 2.0}}, "name": {"summary": {"Student2": 1, "Student1": 1, "Student6": 1, "Student5": 1, "Student14": 1, "Student13": 1}}, "income": {"summary": {"count": 6.0, "std": 18.618986725025259, "min": 20.0, "max": 70.0, "50%": 50.0, "25%": 35.0, "75%": 57.5, "mean": 46.666666666666664}}}, "F": {"grade": {"summary": {"count": 8.0, "std": 0.46291004988627571, "min": 3.0, "max": 4.0, "50%": 4.0, "25%": 3.75, "75%": 4.0, "mean": 3.75}}, "name": {"summary": {"Student9": 1, "Student8": 1, "Student3": 1, "Student7": 1, "Student4": 1, "Student12": 1, "Student11": 1, "Student10": 1}}, "income": {"summary": {"count": 8.0, "std": 7.5592894601845444, "min": 50.0, "max": 70.0, "50%": 50.0, "25%": 50.0, "75%": 60.0, "mean": 55.0}}}}};
-    testData["summary"].push(test);
-    var test = {};
-    test["columnName"] = ["name", "sex", "grade", "income"];
-    test["query"] = {};
-    test["groups"] = ["name", "sex"];
-    test["result"] = {"sex,name": {"(u'F', u'Student4')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 3.0, "max": 3.0, "50%": 3.0, "25%": 3.0, "75%": 3.0, "mean": 3.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'F', u'Student12')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 70.0, "max": 70.0, "50%": 70.0, "25%": 70.0, "75%": 70.0, "mean": 70.0}}}, "(u'M', u'Student5')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student13')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 70.0, "max": 70.0, "50%": 70.0, "25%": 70.0, "75%": 70.0, "mean": 70.0}}}, "(u'F', u'Student3')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 3.0, "max": 3.0, "50%": 3.0, "25%": 3.0, "75%": 3.0, "mean": 3.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student1')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 1.0, "max": 1.0, "50%": 1.0, "25%": 1.0, "75%": 1.0, "mean": 1.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 30.0, "max": 30.0, "50%": 30.0, "25%": 30.0, "75%": 30.0, "mean": 30.0}}}, "(u'F', u'Student10')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 60.0, "max": 60.0, "50%": 60.0, "25%": 60.0, "75%": 60.0, "mean": 60.0}}}, "(u'F', u'Student11')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 60.0, "max": 60.0, "50%": 60.0, "25%": 60.0, "75%": 60.0, "mean": 60.0}}}, "(u'F', u'Student8')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'F', u'Student7')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student14')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 1.0, "max": 1.0, "50%": 1.0, "25%": 1.0, "75%": 1.0, "mean": 1.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 20.0, "max": 20.0, "50%": 20.0, "25%": 20.0, "75%": 20.0, "mean": 20.0}}}, "(u'F', u'Student9')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student2')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 50.0, "max": 50.0, "50%": 50.0, "25%": 50.0, "75%": 50.0, "mean": 50.0}}}, "(u'M', u'Student6')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}, "income": {"summary": {"count": 1.0, "std": "null", "min": 60.0, "max": 60.0, "50%": 60.0, "25%": 60.0, "75%": 60.0, "mean": 60.0}}}}};
-    testData["summary"].push(test);
-    var test = {};
-    test["columnName"] = ["grade"];
-    test["query"] = {};
-    test["groups"] = ["name", "sex"];
-    test["result"] = {"name,sex": {"(u'Student7', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student13', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student2', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}}, "(u'Student4', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 3.0, "max": 3.0, "50%": 3.0, "25%": 3.0, "75%": 3.0, "mean": 3.0}}}, "(u'Student5', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}}, "(u'Student1', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 1.0, "max": 1.0, "50%": 1.0, "25%": 1.0, "75%": 1.0, "mean": 1.0}}}, "(u'Student11', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student10', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student6', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 2.0, "max": 2.0, "50%": 2.0, "25%": 2.0, "75%": 2.0, "mean": 2.0}}}, "(u'Student12', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student14', u'M')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 1.0, "max": 1.0, "50%": 1.0, "25%": 1.0, "75%": 1.0, "mean": 1.0}}}, "(u'Student8', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}, "(u'Student3', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 3.0, "max": 3.0, "50%": 3.0, "25%": 3.0, "75%": 3.0, "mean": 3.0}}}, "(u'Student9', u'F')": {"grade": {"summary": {"count": 1.0, "std": "null", "min": 4.0, "max": 4.0, "50%": 4.0, "25%": 4.0, "75%": 4.0, "mean": 4.0}}}}};
-    testData["summary"].push(test);
-
-
     describe(" Test Summary", function () {
         it("summary : with none query, none group", function () {
             bambooSet = new bamboo.Dataset({ id: testData.id });
@@ -528,7 +1567,42 @@ describe( "Bamboo Library", function () {
         });
     });
 
-    testData["info"] = {"num_rows": 14, "attribution": "", "description": "", "license": "", "num_columns": 4, "updated_at": "2012-10-12 20:57:41", "created_at": "2012-10-12 20:57:41", "schema": {"grade": {"olap_type": "measure", "simpletype": "integer", "label": "grade"}, "sex": {"olap_type": "dimension", "cardinality": 2, "simpletype": "string", "label": "sex"}, "name": {"olap_type": "dimension", "cardinality": 14, "simpletype": "string", "label": "name"}, "income": {"olap_type": "measure", "simpletype": "integer", "label": "income"}}, "id": "1cece817bae04825874669c815f33f99", "label": ""}; 
+    testData["info"] = {
+        "num_rows": 14, 
+        "attribution": "", 
+        "description": "", 
+        "license": "", 
+        "num_columns": 4, 
+        "updated_at": 
+        "2012-10-12 20:57:41", 
+        "created_at": "2012-10-12 20:57:41", 
+        "schema": {
+            "grade": {
+                "olap_type": "measure", 
+                "simpletype": "integer", 
+                "label": "grade"
+            }, 
+            "sex": {
+                "olap_type": "dimension", 
+                "cardinality": 2, 
+                "simpletype": "string", 
+                "label": "sex"
+            }, 
+            "name": {
+                "olap_type": "dimension", 
+                "cardinality": 14, 
+                "simpletype": "string", 
+                "label": "name"
+            }, 
+            "income": {
+                "olap_type": "measure", 
+                "simpletype": "integer", 
+                "label": "income"
+            }
+        }, 
+        "id": "1cece817bae04825874669c815f33f99", 
+        "label": ""
+    }; 
     
     describe(" Test Info", function () {
         it("show info", function () {
