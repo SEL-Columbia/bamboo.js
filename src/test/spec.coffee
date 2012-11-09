@@ -80,6 +80,8 @@ describe "calculations", ->
     waits 2000
     runs ->
       @dataset.add_calculation("above_3rd_grade", "grade > 3")
+    waits 2000
+    runs ->
       queried_data = @dataset.query_dataset().data
       expect(queried_data[0].above_3rd_grade).toBeDefined()
 

@@ -107,9 +107,12 @@
     });
     return it("adds a simple calculation", function() {
       waits(2000);
+      runs(function() {
+        return this.dataset.add_calculation("above_3rd_grade", "grade > 3");
+      });
+      waits(2000);
       return runs(function() {
         var queried_data;
-        this.dataset.add_calculation("above_3rd_grade", "grade > 3");
         queried_data = this.dataset.query_dataset().data;
         return expect(queried_data[0].above_3rd_grade).toBeDefined();
       });
