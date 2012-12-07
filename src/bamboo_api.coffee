@@ -120,6 +120,10 @@ class Dataset
       data: data
     @_run_query "calculation_#{calc_id}", url, false, success_cb, opts
 
+  remove_calculation: (name) ->
+    data =
+      name:name
+
   list_formulas: () ->
     url = bamboo_url("calculations", @id)
     opts =
@@ -128,7 +132,7 @@ class Dataset
       log "list_formulas success callback" if dbg()
     @_run_query "list_formulas", url, false, success_cb, opts
 
-  remove_calculation: (name) ->
+
 
   delete: ()->
     complete = false

@@ -1,6 +1,6 @@
 test_data =
-  #id : "1cece817bae04825874669c815f33f99"
-  id : "2bd899d88f094b56a74a1d9d182e4494"
+  id : "1cece817bae04825874669c815f33f99"
+  #id : "2bd899d88f094b56a74a1d9d182e4494"
   csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
 
 tmp_ds = "1325a517cc33443bbc2a09b39adae401"
@@ -85,6 +85,15 @@ describe "calculations", ->
     runs ->
       queried_data = @dataset.query_dataset().data
       expect(queried_data[0].above_3rd_grade).toBeDefined()
+
+  it "removes a simple calculation", ->
+    waits 2000
+    runs ->
+      @datasets.remove_calculation("above_3rd_grade")
+    waits 2000
+    runs ->
+      queried_data = @dataset.query_dataset().data
+      expect(queried_data[0].above_3rd_grade).toBeUnefined()
 
 ###
 based on underscore.js _.pick
