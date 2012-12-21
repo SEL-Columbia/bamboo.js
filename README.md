@@ -3,4 +3,5 @@ Bamboo.JS
 
 Built to interface a browser with bamboo.io
 
-Testing done with Jasmine
+* [Github Pages version](http://modilabs.github.com/bamboo_js/)
+* [Jasmine Tests](http://modilabs.github.com/bamboo_js/test.html)
