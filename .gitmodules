@@ -1,3 +1,6 @@
 [submodule "public/jasmine"]
 	path = public/jasmine
-	url = git://github.com/pivotal/jasmine.git
+	url = https://github.com/pivotal/jasmine
+[submodule "lib/jasmine"]
+	path = lib/jasmine
+	url = https://github.com/pivotal/jasmine
