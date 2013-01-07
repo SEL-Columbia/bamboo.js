@@ -74,8 +74,10 @@ describe "bamboo api works", ->
 
 
 describe "calculations", ->
-  beforeEach -> @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
-  afterEach -> @dataset.delete()
+  beforeEach ->
+    @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+  afterEach ->
+    @dataset.delete()
 
   it "adds a simple calculation", ->
     waits 2000
@@ -87,10 +89,15 @@ describe "calculations", ->
       expect(queried_data[0].above_3rd_grade).toBeDefined()
 
   it "can query aggregations", ->
-    # at the moment, this only works because an aggregation has been created above, if there are no calculations, bamboo returns a 400(Bad Request)
-    dataset   = new bamboo.Dataset({id: "eaa43ef6baa54af4948303fd093d9756"})
-    dataset.query_aggregations()
-    expect(dataset.aggregations).toBeDefined()
+    waits 2000
+    runs ->
+      @dataset.add_calculation("total_income", "sum(income)")
+    waits 2000
+    runs ->
+      # at the moment, this only works because an aggregation has been created above, if there are no calculations, bamboo returns a 400(Bad Request)
+      @dataset.query_aggregations()
+      expect(@dataset.aggregations).toBeDefined()
+      expect(@dataset.aggregations[""]).toBeDefined()
 
 ###
 based on underscore.js _.pick
