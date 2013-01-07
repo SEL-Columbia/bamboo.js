@@ -130,6 +130,11 @@ class Dataset
 
   remove_calculation: (name) ->
 
+  query_aggregations: (sync_cb=false) ->
+    @_run_query "aggregations", bamboo_url("datasets", @id, "aggregations"), !!sync_cb, (r)->
+      @aggregations = r
+      sync_cb.apply @, [response, status, _req] if !!sync_cb
+
   delete: ()->
     complete = false
     $.ajax
