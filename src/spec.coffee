@@ -1,5 +1,5 @@
 test_data =
-  id : "a10ff9e5380f426fad9576ae0f8a05ca"
+  id : "fdf66b3a8a5b4617bd12f56e70e394a1"
   csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
 
 tmp_ds = "1325a517cc33443bbc2a09b39adae401"
@@ -34,7 +34,7 @@ describe "bamboo api works", ->
 
   it "can select from dataset", ->
     dataset   = @build_dataset('id', 'autoload')
-    
+
     select = dataset.select({grade:1})
     expect(select.length).toBe(14)
 
@@ -72,6 +72,7 @@ describe "bamboo api works", ->
     runs ->
       expect(bamboo.dataset_exists(new_set_id)).not.toBeTruthy()
 
+
 describe "calculations", ->
   beforeEach -> @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
   afterEach -> @dataset.delete()
@@ -84,6 +85,12 @@ describe "calculations", ->
     runs ->
       queried_data = @dataset.query_dataset().data
       expect(queried_data[0].above_3rd_grade).toBeDefined()
+
+  it "can query aggregations", ->
+    # at the moment, this only works because an aggregation has been created above, if there are no calculations, bamboo returns a 400(Bad Request)
+    dataset   = new bamboo.Dataset({id: "eaa43ef6baa54af4948303fd093d9756"})
+    dataset.query_aggregations()
+    expect(dataset.aggregations).toBeDefined()
 
 ###
 based on underscore.js _.pick
