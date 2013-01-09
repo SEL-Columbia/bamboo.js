@@ -108,12 +108,14 @@ class Dataset
       @data = r
       sync_cb.apply @, [response, status, _req] if !!sync_cb
 
-  add_calculation: (name, formula, sync_cb=false) ->
+  add_calculation: (name, formula, group, sync_cb=false) ->
     calc_id   = _uniqueId("calculation")
     url       = bamboo_url("calculations", @id)
-    data =
+    data = 
       name: name
       formula: formula
+    if group? 
+      data = _.extend(data, group: group)
     success_cb = (response)-> log response.success if dbg()
     opts =
       type: 'POST'

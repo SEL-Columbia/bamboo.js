@@ -12,17 +12,29 @@ class DemoFieldset
 $ -> c = $('#main').empty(); fs.build(c) for fs in fieldsets
 
 demo "New Dataset", ()->
-  @code = "var dataset = new bamboo.Dataset({url: 'http://bitly.com/ZfzBwP'});"
-
-demo "Check if dataset exists", ()->
-  @code = "bamboo.dataset_exists('nonexistentdataset_id');"
+  @code = "var dataset = new bamboo.Dataset({id: '8db48e665fdc494ea69ab90d2aefc341'});"
 
 demo "Get info", ()->
   @code = "dataset.query_info();"
 
-demo "Add calculation", ()->
+demo "Add aggregation calculation(s)", ()->
   @code = """
-    dataset.add_calculation("above_3rd_grade", "grade > 3");
-    dataset.query_dataset();
-    console.log(dataset.data);
+    // ONLY RUN BELOW ONCE
+    //dataset.add_calculation('wp_functional', 'newest(submit_date,functional)', 'wp_id');
+    //dataset.add_calculation('latest_submit_date', 'max(submit_date)', 'wp_id');
+  """
+
+demo "Now get the aggregated dataset, and check its okay", ()->
+  @code = """
+    var aggregatedDatasets = dataset.query_aggregations();
+    var waterPointDataset = new bamboo.Dataset({id: aggregatedDatasets.aggregations["wp_id"]});
+    waterPointDataset.query_info()
     """
+
+demo "And finally.... get the data", ()->
+  @code = """
+    waterPointDataset.query_dataset()
+    console.log(waterPointDataset.data)
+    """
+
+
