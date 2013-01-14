@@ -80,13 +80,24 @@ describe "calculations", ->
     @dataset.delete()
 
   it "adds a simple calculation", ->
-    waits 2000
+    waits 3000
     runs ->
       @dataset.add_calculation("above_3rd_grade", "grade > 3")
-    waits 2000
+    waits 3000
     runs ->
       queried_data = @dataset.query_dataset().data
       expect(queried_data[0].above_3rd_grade).toBeDefined()
+
+  it "can query an added calculation", ->
+    waits 3000
+    runs ->
+      @dataset.add_calculation("above_3rd_grade", "grade > 3")
+    waits 3000
+    runs ->
+      @dataset.query_calculations()
+      expect(@dataset.calculations).toBeDefined()
+      expect(@dataset.calculations[0]).toBeDefined()
+      expect(@dataset.calculations[0].name).toEqual("above_3rd_grade")
 
   it "can query aggregations", ->
     waits 2000

@@ -120,13 +120,10 @@ class Dataset
       data: data
     @_run_query "calculation_#{calc_id}", url, false, success_cb, opts
 
-  list_formulas: () ->
-    url = bamboo_url("calculations", @id)
-    opts =
-      type: 'GET'
-    success_cb = ()->
-      log "list_formulas success callback" if dbg()
-    @_run_query "list_formulas", url, false, success_cb, opts
+  query_calculations: (sync_cb=false) ->
+    @_run_query "calculations", bamboo_url("datasets", @id, "calculations"), false, (r)->
+      @calculations = r
+      sync_cb.apply @, [response, status, _req] if !!sync_cb
 
   remove_calculation: (name) ->
 
