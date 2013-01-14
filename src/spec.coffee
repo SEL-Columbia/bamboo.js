@@ -66,7 +66,7 @@ describe "bamboo api works", ->
       log "Newly created dataset id: '#{new_set_id}'"
       expect(new_dataset.delete()).toBeTruthy()
 
-    waits 100
+    waits 2000
 
     # bamboo.dataset_exists("id") might not work *immediately* after deletion
     runs ->
