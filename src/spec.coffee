@@ -66,7 +66,7 @@ describe "bamboo api works", ->
       log "Newly created dataset id: '#{new_set_id}'"
       expect(new_dataset.delete()).toBeTruthy()
 
-    waits 100
+    waits 2000
 
     # bamboo.dataset_exists("id") might not work *immediately* after deletion
     runs ->
@@ -79,7 +79,7 @@ describe "calculations", ->
   afterEach ->
     @dataset.delete()
 
-  it "adds a simple calculation", ->
+  it "adds and deletes simple calculation", ->
     waits 3000
     runs ->
       @dataset.add_calculation("above_3rd_grade", "grade > 3")
@@ -87,6 +87,14 @@ describe "calculations", ->
     runs ->
       queried_data = @dataset.query_dataset().data
       expect(queried_data[0].above_3rd_grade).toBeDefined()
+    waits 100
+    runs ->
+      @dataset.remove_calculation("above_3rd_grade")
+    waits 3000
+    runs ->
+      queried_data = @dataset.query_dataset().data
+      expect(queried_data[0].above_3rd_grade).not.toBeDefined()
+
 
   it "can query an added calculation", ->
     waits 3000

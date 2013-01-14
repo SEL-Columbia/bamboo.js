@@ -126,6 +126,14 @@ class Dataset
       sync_cb.apply @, [response, status, _req] if !!sync_cb
 
   remove_calculation: (name) ->
+    url = bamboo_url("calculations", @id)
+    data =
+      name: name
+    success_cb = (response)-> log response.success if dbg()
+    opts =
+      type: 'DELETE'
+      data: data
+    @_run_query "delete calculation under name #{name} in dataset #{@id}", url, false, success_cb, opts
 
   query_aggregations: (sync_cb=false) ->
     @_run_query "aggregations", bamboo_url("datasets", @id, "aggregations"), !!sync_cb, (r)->
