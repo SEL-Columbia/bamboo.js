@@ -1,10 +1,10 @@
-Bamboo.JS
+bamboo.js
 =========
 
-Built to interface a browser with bamboo.io
+Built to interface a browser with [bamboo.io](http://bamboo.io)
 
-* [Github Pages version](http://modilabs.github.com/bamboo_js/)
-* [Jasmine Tests](http://modilabs.github.com/bamboo_js/test.html)
+* [Github Pages version](http://modilabs.github.com/bamboo.js)
+* [Jasmine Tests](http://modilabs.github.com/bamboo.js/test.html)
 
 Install
 =======
