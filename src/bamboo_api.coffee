@@ -188,6 +188,9 @@ class Dataset
       @aggregations = r
       sync_cb.apply @, [response, status, _req] if !!sync_cb
 
+  remove_aggregations: (name) ->
+    @remove_calculation(name)
+
   join_db:(db1,db2)->
 
   merge_db:(db1,db2)->

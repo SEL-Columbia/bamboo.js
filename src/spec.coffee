@@ -116,6 +116,19 @@ describe "calculations", ->
       expect(@dataset.calculations[0]).toBeDefined()
       expect(@dataset.calculations[0].name).toEqual("above_3rd_grade")
 
+  it "can add and remove aggregation", ->
+    waits 2000
+    runs ->
+      @dataset.add_aggregations("total_income","sum(income)")
+    waits 2000
+    runs ->
+      @dataset.query_aggregations()
+      expect(@dataset.aggregations).toBeDefined()
+      expect(@dataset.aggregations[""]).toBeDefined()
+      @dataset.remove_aggregations("total_income",(err,ret)->
+        expect(ret).toContain("deleted calculation: 'total_income' for dataset:")
+      )
+      
   it "can query aggregations", ->
     waits 2000
     runs ->
