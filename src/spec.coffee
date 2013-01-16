@@ -72,12 +72,21 @@ describe "bamboo api works", ->
     runs ->
       expect(bamboo.dataset_exists(new_set_id)).not.toBeTruthy()
 
+    
 
 describe "calculations", ->
   beforeEach ->
     @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
   afterEach ->
     @dataset.delete()
+
+  it "does regex", ->
+    true_st = @dataset._is_aggregation "sum(formula)"
+    expect(true_st).toBeTruthy()
+    false_st = @dataset._is_aggregation "murica"
+    expect(false_st).not.toBeTruthy()
+    false_st_2 = @dataset._is_aggregation "sum())"
+    expect(false_st_2).not.toBeTruthy()
 
   it "adds and deletes simple calculation", ->
     waits 3000

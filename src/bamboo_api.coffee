@@ -13,6 +13,7 @@ bamboo_url = (section="datasets", id, name)->
     pieces.push name if name?
   pieces.join '/'
 
+
 class Dataset
   constructor: (data) ->
     @extend(data)
@@ -21,6 +22,17 @@ class Dataset
 
     if @url? and !@id? and @autoload
       @load_from_url()
+
+
+    @allowed_aggregation = ['max',
+                           'min',
+                           'mean',
+                           'median',
+                           'sum',
+                           'ratio',
+                           'count',
+                           'argmax',
+                           'newest']
 
   extend: (obj, override=false) ->
     @[key] = val for key, val of obj when override or !@[key]?
@@ -120,6 +132,15 @@ class Dataset
       data: data
     @_run_query "calculation_#{calc_id}", url, false, success_cb, opts
 
+  _is_aggregation: (formula)->
+    keyword_sel = @allowed_aggregation.join "|"
+    regex_str = "^(#{keyword_sel})\\([^\\)]+\\)$"
+    regex = new RegExp(regex_str)
+    if formula.match(regex) isnt null
+      return true
+    return false
+    
+
   query_calculations: (sync_cb=false) ->
     @_run_query "calculations", bamboo_url("datasets", @id, "calculations"), false, (r)->
       @calculations = r
@@ -133,12 +154,23 @@ class Dataset
     opts =
       type: 'DELETE'
       data: data
-    @_run_query "delete calculation under name #{name} in dataset #{@id}", url, false, success_cb, opts
+    @_run_query "delete calculation under name #{name} in dataset #{@id}",
+      url, false, success_cb, opts
+
+#  add_aggregations:(name, formula, group, sync_cb=false)->
+#    agg_id = _uniqueId "aggregation"
+#    url = bamboo_url("aggregations", @id)
 
   query_aggregations: (sync_cb=false) ->
     @_run_query "aggregations", bamboo_url("datasets", @id, "aggregations"), !!sync_cb, (r)->
       @aggregations = r
       sync_cb.apply @, [response, status, _req] if !!sync_cb
+
+  join_db:(db1,db2)->
+
+  merge_db:(db1,db2)->
+
+  update: ()->
 
   delete: ()->
     complete = false
