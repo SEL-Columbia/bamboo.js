@@ -121,6 +121,10 @@ class Dataset
       sync_cb.apply @, [response, status, _req] if !!sync_cb
 
   add_calculation: (name, formula, sync_cb=false) ->
+    if @_is_aggregation formula
+      throw new Error "Error: this formula indicates it's aggregation
+        instead of calculation, please use Dataset.add_aggregation instead"
+
     calc_id   = _uniqueId("calculation")
     url       = bamboo_url("calculations", @id)
     data =
@@ -139,7 +143,6 @@ class Dataset
     if formula.match(regex) isnt null
       return true
     return false
-    
 
   query_calculations: (sync_cb=false) ->
     @_run_query "calculations", bamboo_url("datasets", @id, "calculations"), false, (r)->
@@ -157,9 +160,28 @@ class Dataset
     @_run_query "delete calculation under name #{name} in dataset #{@id}",
       url, false, success_cb, opts
 
-#  add_aggregations:(name, formula, group, sync_cb=false)->
-#    agg_id = _uniqueId "aggregation"
-#    url = bamboo_url("aggregations", @id)
+  add_aggregations:(name, formula, groups=null, sync_cb=false)->
+    if @_is_aggregation(formula)
+      agg_id = _uniqueId "aggregation"
+      url = bamboo_url("calculations", @id)
+      data =
+        name: name
+        formula: formula
+      if groups isnt null
+        if groups instanceof Array
+          data['group'] = groups.join()
+        else
+          throw new Error "group must be an array"
+
+      success_cb = (response)-> log response.success if dbg()
+      opts =
+        type: 'POST'
+        data: data
+      @_run_query "aggregation_#{agg_id}", url, false, success_cb, opts
+
+    else
+      throw new Error "ill formated aggregation formula, perhaps you are
+        looking for calculation instead of aggregation?"
 
   query_aggregations: (sync_cb=false) ->
     @_run_query "aggregations", bamboo_url("datasets", @id, "aggregations"), !!sync_cb, (r)->

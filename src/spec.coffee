@@ -119,7 +119,7 @@ describe "calculations", ->
   it "can query aggregations", ->
     waits 2000
     runs ->
-      @dataset.add_calculation("total_income", "sum(income)")
+      @dataset.add_aggregations("total_income", "sum(income)")
     waits 2000
     runs ->
       # at the moment, this only works because an aggregation has been created above, if there are no calculations, bamboo returns a 400(Bad Request)
