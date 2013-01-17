@@ -23,7 +23,6 @@ class Dataset
     if @url? and !@id? and @autoload
       @load_from_url()
 
-
     @allowed_aggregation = ['max',
                            'min',
                            'mean',
@@ -191,11 +190,25 @@ class Dataset
   remove_aggregations: (name) ->
     @remove_calculation(name)
 
-  join_db:(db1,db2)->
-
-  merge_db:(db1,db2)->
+  join:(left, right, on_column)->
+  ###
+  Create a new dataset that is the result of a join, where this
+  left_dataset is the lefthand side and *right_dataset* is the
+  righthand side and *on* is the column on which to join.
+  The column that is joined on must be unique in the righthand side
+  and must exist in both datasets.
+  ###
+  merge_db:(db1, db2)->
+  ###
+  Create a new dataset that is a row-wise merge of those in *datasets*.
+  Returns the new merged dataset.
+  ###
 
   update: ()->
+  ###
+  Updates this dataset with the rows given in {column: value} format.
+  Any unspecified columns will result in n/a values.
+  ###
 
   delete: ()->
     complete = false
