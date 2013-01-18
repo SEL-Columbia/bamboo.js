@@ -190,25 +190,59 @@ class Dataset
   remove_aggregations: (name) ->
     @remove_calculation(name)
 
-  join:(left, right, on_column)->
-  ###
-  Create a new dataset that is the result of a join, where this
-  left_dataset is the lefthand side and *right_dataset* is the
-  righthand side and *on* is the column on which to join.
-  The column that is joined on must be unique in the righthand side
-  and must exist in both datasets.
-  ###
-  merge_db:(db1, db2)->
-  ###
-  Create a new dataset that is a row-wise merge of those in *datasets*.
-  Returns the new merged dataset.
-  ###
+  join: (left, right, on_column)->
+    ###
+    Create a new dataset that is the result of a join, where this
+    left_dataset is the lefthand side and *right_dataset* is the
+    righthand side and *on* is the column on which to join.
+    The column that is joined on must be unique in the righthand side
+    and must exist in both datasets.
+    ###
+    url = bamboo_url("datasets","join")
+    data =
+      dataset_id: left
+      other_dataset_id: right
+      on: on_column
+    success_cb = (response)-> log response.success if dbg()
+    opts =
+      type: "POST"
+      data: data
+    @_run_query "merging datasets #{datasets}", url, false, success_cd, opts
+      
 
-  update: ()->
-  ###
-  Updates this dataset with the rows given in {column: value} format.
-  Any unspecified columns will result in n/a values.
-  ###
+  merge:(datasets)->
+    ###
+    Create a new dataset that is a row-wise merge of those in *datasets*.
+    Returns the new merged dataset.
+    ###
+    if not (datasets instanceof Array)
+      throw new Error "datasets for merging must be an array"
+    url = bamboo_url('datasets','merge')
+    data =
+      datasets: datasets
+    success_cb = (response)-> log response.success if dbg()
+    opts =
+      type: "POST"
+      data: data
+    @_run_query "merging datasets #{datasets}", url, false, success_cd, opts
+
+  update: (rows)->
+    ###
+    Updates this dataset with the rows given in {column: value} format.
+    Any unspecified columns will result in n/a values.
+    ###
+    if not (rows instanceof Array)
+      throw new Error "rows must be an array"
+    if rows.length is 0
+      throw new Error "rows cannot be empty"
+    url = bamboo_url('datasets', @id)
+    data =
+      update: rows
+    success_cb = (response)-> log response.success if dbg()
+    opts =
+      type: "PUT"
+      data: data
+    @_run_query "updating dataset #{@id}", url, false, success_cd, opts
 
   delete: ()->
     complete = false

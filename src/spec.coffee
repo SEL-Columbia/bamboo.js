@@ -140,6 +140,14 @@ describe "calculations", ->
       expect(@dataset.aggregations).toBeDefined()
       expect(@dataset.aggregations[""]).toBeDefined()
 
+  it "can update date in an dataset", ->
+
+  it "can merge a few datasets together", ->
+
+  it "can join two datasets on a certain column", ->
+
+
+
 ###
 based on underscore.js _.pick
 ###
