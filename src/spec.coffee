@@ -1,6 +1,8 @@
 test_data =
   id : "fdf66b3a8a5b4617bd12f56e70e394a1"
-  csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
+  csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv"
+  csv_file_merge: "https://www.dropbox.com/s/5aja0nlcufn65vd/sample_merge.csv"
+  csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv"
 
 tmp_ds = "1325a517cc33443bbc2a09b39adae401"
 
@@ -80,13 +82,6 @@ describe "calculations", ->
   afterEach ->
     @dataset.delete()
 
-  it "does regex", ->
-    true_st = @dataset._is_aggregation "sum(formula)"
-    expect(true_st).toBeTruthy()
-    false_st = @dataset._is_aggregation "murica"
-    expect(false_st).not.toBeTruthy()
-    false_st_2 = @dataset._is_aggregation "sum())"
-    expect(false_st_2).not.toBeTruthy()
 
   it "adds and deletes simple calculation", ->
     waits 3000
@@ -116,6 +111,20 @@ describe "calculations", ->
       expect(@dataset.calculations[0]).toBeDefined()
       expect(@dataset.calculations[0].name).toEqual("above_3rd_grade")
 
+describe "aggregations", ->
+  beforeEach ->
+    @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+  afterEach ->
+    @dataset.delete()
+
+  it "does regex", ->
+    true_st = @dataset._is_aggregation "sum(formula)"
+    expect(true_st).toBeTruthy()
+    false_st = @dataset._is_aggregation "murica"
+    expect(false_st).not.toBeTruthy()
+    false_st_2 = @dataset._is_aggregation "sum())"
+    expect(false_st_2).not.toBeTruthy()
+
   it "can add and remove aggregation", ->
     waits 2000
     runs ->
@@ -140,11 +149,29 @@ describe "calculations", ->
       expect(@dataset.aggregations).toBeDefined()
       expect(@dataset.aggregations[""]).toBeDefined()
 
-  it "can update date in an dataset", ->
+describe "updates, join, merge", ->
+  beforeEach ->
+    @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+
+  afterEach ->
+    @dataset.delete()
+
+  it "can update data in an dataset", ->
 
   it "can merge a few datasets together", ->
+    @dataset_merge = new bamboo.Dataset({url: test_data.csv_file_merge, autoload: true})
+    datasets =[@dataset.id, @dataset_merge.id]
+    
+
+    @dataset_merge.delete()
+
 
   it "can join two datasets on a certain column", ->
+    @dataset_join = new bamboo.Dataset({url: test_data.csv_file_join, autoload: true})
+
+    @dataset_join.delete()
+
+  return
 
 
 
