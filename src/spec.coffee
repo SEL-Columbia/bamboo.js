@@ -1,8 +1,8 @@
 test_data =
   id : "fdf66b3a8a5b4617bd12f56e70e394a1"
-  csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv"
-  csv_file_merge: "https://www.dropbox.com/s/5aja0nlcufn65vd/sample_merge.csv"
-  csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv"
+  csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
+  csv_file_merge: "https://www.dropbox.com/s/5aja0nlcufn65vd/sample_merge.csv?dl=1"
+  csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv?dl=1"
 
 tmp_ds = "1325a517cc33443bbc2a09b39adae401"
 
