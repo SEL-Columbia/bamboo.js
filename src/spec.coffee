@@ -3,13 +3,27 @@ test_data =
   csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
   csv_file_merge: "https://www.dropbox.com/s/5aja0nlcufn65vd/sample_merge.csv?dl=1"
   csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv?dl=1"
+  self_csv_file : "sample_dataset_school_survey.csv"
+  self_csv_file_merge: "sample_merge.csv"
+  self_csv_file_join: "sample_join.csv"
 
 tmp_ds = "1325a517cc33443bbc2a09b39adae401"
+
+file_switch = (type)->
+  switch type
+    when "origin" then test_data.self_csv_file
+    when "merge" then test_data.self_csv_file_merge
+    when "join" then test_data.self_csv_file_join
+file_url= (branch,type)->
+  file_name = file_switch(type)
+  domain = "https://raw.github.com/modilabs/bamboo.js/"
+  result = "#{domain}#{branch}/public/csv/#{file_name}"
+
 
 describe "bamboo api works", ->
   beforeEach ->
     @available_opts =
-      url: test_data.csv_file
+      url: file_url("jan_15","origin")
       autoload: false
       id: test_data.id
     @build_dataset = (keys)=>
@@ -62,7 +76,7 @@ describe "bamboo api works", ->
   it "can create and delete a dataset", ->
     new_set_id = false
     runs ->
-      new_dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+      new_dataset = new bamboo.Dataset({url: file_url("jan_15","origin"), autoload: true})
       expect(new_dataset.id).toBeTruthy()
       new_set_id = new_dataset.id
       log "Newly created dataset id: '#{new_set_id}'"
@@ -78,7 +92,7 @@ describe "bamboo api works", ->
 
 describe "calculations", ->
   beforeEach ->
-    @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+    @dataset = new bamboo.Dataset({url: file_url("jan_15","origin"), autoload: true})
   afterEach ->
     @dataset.delete()
 
@@ -113,11 +127,11 @@ describe "calculations", ->
 
 describe "aggregations", ->
   beforeEach ->
-    @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+    @dataset = new bamboo.Dataset({url: file_url("jan_15","origin"), autoload: true})
   afterEach ->
     @dataset.delete()
 
-  it "does regex", ->
+  it "checks aggregation form calculation", ->
     true_st = @dataset._is_aggregation "sum(formula)"
     expect(true_st).toBeTruthy()
     false_st = @dataset._is_aggregation "murica"
@@ -151,7 +165,7 @@ describe "aggregations", ->
 
 describe "updates, join, merge", ->
   beforeEach ->
-    @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+    @dataset = new bamboo.Dataset({url: file_url("jan_15","origin"), autoload: true})
 
   afterEach ->
     @dataset.delete()
@@ -159,15 +173,16 @@ describe "updates, join, merge", ->
   it "can update data in an dataset", ->
 
   it "can merge a few datasets together", ->
-    @dataset_merge = new bamboo.Dataset({url: test_data.csv_file_merge, autoload: true})
+    @dataset_merge = new bamboo.Dataset({url: file_url("jan_15","merge"), autoload: true})
     datasets =[@dataset.id, @dataset_merge.id]
+    @dataset.merge(datasets)
     
 
     @dataset_merge.delete()
 
 
   it "can join two datasets on a certain column", ->
-    @dataset_join = new bamboo.Dataset({url: test_data.csv_file_join, autoload: true})
+    @dataset_join = new bamboo.Dataset({url: file_url("jan_15","join"), autoload: true})
 
     @dataset_join.delete()
 

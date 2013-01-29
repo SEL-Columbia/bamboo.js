@@ -224,7 +224,8 @@ class Dataset
     opts =
       type: "POST"
       data: data
-    @_run_query "merging datasets #{datasets}", url, false, success_cd, opts
+    @_run_query "merging datasets #{datasets}", url, false, success_cd, opts, (res)->
+      console.log res
 
   update: (rows)->
     ###
