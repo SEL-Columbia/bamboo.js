@@ -207,7 +207,7 @@ class Dataset
     opts =
       type: "POST"
       data: data
-    @_run_query "merging datasets #{datasets}", url, false, success_cd, opts
+    @_run_query "merging datasets #{datasets}", url, false, success_cb, opts
       
 
   merge:(datasets)->
@@ -224,7 +224,7 @@ class Dataset
     opts =
       type: "POST"
       data: data
-    @_run_query "merging datasets #{datasets}", url, false, success_cd, opts, (res)->
+    @_run_query "merging datasets #{datasets}", url, false, success_cb, opts, (res)->
       console.log res
 
   update: (rows)->
@@ -243,7 +243,7 @@ class Dataset
     opts =
       type: "PUT"
       data: data
-    @_run_query "updating dataset #{@id}", url, false, success_cd, opts
+    @_run_query "updating dataset #{@id}", url, false, success_cb, opts
 
   delete: ()->
     complete = false
