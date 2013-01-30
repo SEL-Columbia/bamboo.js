@@ -1,122 +1,171 @@
 test_data =
-  id : "fdf66b3a8a5b4617bd12f56e70e394a1"
   csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
 
-tmp_ds = "1325a517cc33443bbc2a09b39adae401"
+available_opts =
+  url: test_data.csv_file
+  autoload: true
 
-describe "bamboo api works", ->
+build_dataset = (keys)=>
+  new bamboo.Dataset _pick(available_opts, keys)
+
+bamboo.settings.URL = "http://localhost:8080"
+
+describe "Bamboo API", ->
+  dataset = null
+
   beforeEach ->
-    @available_opts =
-      url: test_data.csv_file
-      autoload: false
-      id: test_data.id
-    @build_dataset = (keys)=>
-      new bamboo.Dataset _pick(@available_opts, keys)
-
-  it "can query for a new id", ->
-    dataset   = @build_dataset('url', 'autoload')
-    expect(dataset.load_status('from_url')).toBe("not_started")
-
-  it "can access dataset info by existing id", ->
-    dataset   = @build_dataset('id', 'autoload')
-
-    expect(dataset.id).toBeDefined()
-    expect(dataset.query_info().info.id).toBe(dataset.id)
-    expect(dataset.info.num_rows).toBe(14)
-
-  it "can query dataset", ->
-    dataset   = @build_dataset('id', 'autoload')
-
-    expect(dataset.data).not.toBeDefined()
-    dataset.query_dataset()
-
-    expect(dataset.data).toBeDefined()
-
-  it "can select from dataset", ->
-    dataset   = @build_dataset('id', 'autoload')
-
-    select = dataset.select({grade:1})
-    expect(select.length).toBe(14)
-
-  it "can query from dataset", ->
-    dataset   = @build_dataset('id', 'autoload')
-
-    query1 = dataset.query({grade:4})
-    expect(query1.length).toBe(7)
-
-    query2 = dataset.query({grade:3})
-    expect(query2.length).toBe(2)
-  it "can get the summary", ->
-    dataset   = @build_dataset('id', 'autoload')
-
-    summary = dataset.summary()
-    expect(Object.keys(summary).sort().join(', ')).toBe('grade, income, name, sex') if Object.keys?
-
-  it "can query summary", ->
-    dataset = @build_dataset('id', 'autoload')
-    ss = dataset.summary()
-    expect(dataset.summary_result).toBeDefined()
-
-  it "can create and delete a dataset", ->
-    new_set_id = false
+    done  = false
     runs ->
-      new_dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
-      expect(new_dataset.id).toBeTruthy()
-      new_set_id = new_dataset.id
-      log "Newly created dataset id: '#{new_set_id}'"
-      expect(new_dataset.delete()).toBeTruthy()
+      if dataset?
+        done  = true
+      else
+        dataset = build_dataset(['url'])
+        dataset.load_from_url false, ->
+          done = true
 
-    waits 2000
+    waitsFor(->
+      return done
+    , 1000)
 
-    # bamboo.dataset_exists("id") might not work *immediately* after deletion
     runs ->
-      expect(bamboo.dataset_exists(new_set_id)).not.toBeTruthy()
+      expect(dataset.id).toBeDefined()
 
-
-describe "calculations", ->
-  beforeEach ->
-    @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
   afterEach ->
-    @dataset.delete()
+    #complete = dataset.delete()
+    #expect(complete).toBeTruthy()
 
-  it "adds and deletes simple calculation", ->
-    waits 3000
-    runs ->
-      @dataset.add_calculation("above_3rd_grade", "grade > 3")
-    waits 3000
-    runs ->
-      queried_data = @dataset.query_dataset().data
-      expect(queried_data[0].above_3rd_grade).toBeDefined()
-    waits 100
-    runs ->
-      @dataset.remove_calculation("above_3rd_grade")
-    waits 3000
-    runs ->
-      queried_data = @dataset.query_dataset().data
-      expect(queried_data[0].above_3rd_grade).not.toBeDefined()
+  it "wount autoload if not requested", ->
+    temp_dataset = build_dataset(['url'])
+    expect(temp_dataset.load_status('from_url')).toBe("not_started")
 
+  describe "Dataset API", ->
+    it "can query info synchronously", ->
+        temp_dataset = build_dataset(['url', 'autoload'])
+        temp_dataset.query_info()
+        expect(temp_dataset.info.id).toBe(temp_dataset.id)
 
-  it "can query an added calculation", ->
-    waits 3000
-    runs ->
-      @dataset.add_calculation("above_3rd_grade", "grade > 3")
-    waits 3000
-    runs ->
-      @dataset.query_calculations()
-      expect(@dataset.calculations).toBeDefined()
-      expect(@dataset.calculations[0]).toBeDefined()
-      expect(@dataset.calculations[0].name).toEqual("above_3rd_grade")
+    it "can query info async", ->
+      done  = false
+      info = null
+      runs ->
+        dataset.query_info (data) ->
+          info = data
+          done = true
 
-  it "can query aggregations", ->
-    waits 2000
-    runs ->
-      @dataset.add_calculation("total_income", "sum(income)")
-    waits 2000
-    runs ->
-      # at the moment, this only works because an aggregation has been created above, if there are no calculations, bamboo returns a 400(Bad Request)
-      @dataset.query_aggregations()
-      expect(@dataset.aggregations).toBeDefined()
-      expect(@dataset.aggregations[""]).toBeDefined()
+      waitsFor(->
+        return done
+      , 1000)
+
+      runs ->
+        expect(info.id).toBe(dataset.id)
+
+    it "can select from dataset", ->
+      done  = false
+      select = {grade:1}
+
+      # wait for the dataset to be ready before selecting
+      #waits 3000
+
+      runs ->
+        dataset.select select, (data)->
+          done = true
+
+      waitsFor(->
+        return done
+      , 1000)
+
+      runs ->
+        select_key = "select_" + JSON.stringify(select)
+        expect(dataset._selects[select_key]).toBeDefined()
+        #expect(dataset._selects[select_key].length).toBe(14)
+
+    it "can query from dataset", ->
+      done  = false
+      query = {grade: 4}
+
+      # wait for the dataset to be ready before selecting
+      #waits 3000
+
+      runs ->
+        dataset.query query, (data)->
+          done = true
+
+      waitsFor(->
+        return done
+      , 1000)
+
+      runs ->
+        query_key = "query_" + JSON.stringify(query)
+        expect(dataset._queries[query_key]).toBeDefined()
+        #expect(dataset._queries[query_key].length).toBe(7)
+
+  describe "Summaries", ->
+    it "can get the summary for all", ->
+      done = false
+      select = "all"
+
+      # wait for the dataset to be ready before selecting
+      waits 10000
+
+      runs ->
+        dataset.summary "all", null, (data)->
+          done = true
+
+      waitsFor(->
+        return done
+      , 1000)
+
+      runs ->
+        summary_key = "summary_" + select
+        expect(dataset._summaries[summary_key]).toBeDefined()
+
+    it "can get the summary with select and group", ->
+      done = false
+      select = {"income":1}
+      group = "sex"
+      # wait for the dataset to be ready before selecting
+      waits 5000
+
+      runs ->
+        dataset.summary select, group, (data)->
+          done = true
+
+      waitsFor(->
+        return done
+      , 1000)
+
+      runs ->
+        summary_key = "summary_" + JSON.stringify(select)
+        expect(dataset._summaries[summary_key]).toBeDefined()
+        expect(dataset._summaries[summary_key][group]).toBeDefined()
+
+  describe "Calculations", ->
+    it "can add and query calculations", ->
+      # wait for the dataset to be ready for adding calculations
+      waits 8000
+      runs ->
+        dataset.add_calculation("above_3rd_grade", "grade > 3")
+
+      # wait for calculation to be ready
+      waits 3000
+
+      runs ->
+        dataset.query_calculations()
+        expect(dataset.calculations).toBeDefined()
+        expect(dataset.calculations[0]).toBeDefined()
+        expect(dataset.calculations[0].name).toEqual("above_3rd_grade")
+
+    it "can add and query aggregations", ->
+      waits 8000
+      runs ->
+        dataset.add_calculation("total_income", "sum(income)")
+
+      waits 3000
+      runs ->
+        # at the moment, this only works because an aggregation has been created above, if there are no calculations, bamboo returns a 400(Bad Request)
+        dataset.query_aggregations()
+        expect(dataset.aggregations).toBeDefined()
+        expect(dataset.aggregations[""]).toBeDefined()
 
 ###
 based on underscore.js _.pick
