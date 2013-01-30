@@ -8,7 +8,7 @@ available_opts =
 build_dataset = (keys)=>
   new bamboo.Dataset _pick(available_opts, keys)
 
-bamboo.settings.URL = "http://localhost:8080"
+#bamboo.settings.URL = "http://localhost:8080"
 
 describe "Bamboo API", ->
   dataset = null
