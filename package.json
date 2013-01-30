@@ -1,0 +1,14 @@
+{
+  "name": "bamboo.js",
+  "version": "0.0.0",
+  "description": "a javascript library interacting with bamboo.io",
+  "repository": "",
+  "author": "modilabs",
+  "main": "server.js",
+  "dependencies": {
+    "express": "*"
+  },
+  "devDependencies": {
+    "coffee-script": "*"
+  }
+}
