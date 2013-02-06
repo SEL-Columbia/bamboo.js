@@ -6,11 +6,14 @@ dbg = ()-> settings.DEBUG
 jsonify = (args...)-> JSON.stringify.apply @, args
 ensure_jquery = -> throw new Error("jQuery is not available.") unless $?
 
-bamboo_url = (section="datasets", id, name)->
+bamboo_url = (section="datasets", id, operation, name)->
   pieces = [settings.URL, section]
   if id?
     pieces.push id
-    pieces.push name if name?
+    if operation
+      pieces.push operation
+      if name
+        pieces.push name
   pieces.join '/'
 
 
@@ -160,7 +163,7 @@ class Dataset
 #      url, false, success_cb, opts
 
   remove_calculation: (name) ->
-    url = bamboo_url("calculations", @id, name)
+    url = bamboo_url("datasets", @id, "calculations", name)
     success_cb = (response)-> log response.success if dbg()
     opts =
       type: 'DELETE'
@@ -218,7 +221,7 @@ class Dataset
     @_run_query "merging datasets #{datasets}", url, false, success_cb, opts
       
 
-  merge:(datasets)->
+  merge:(datasets,cb)->
     ###
     Create a new dataset that is a row-wise merge of those in *datasets*.
     Returns the new merged dataset.
@@ -226,14 +229,18 @@ class Dataset
     if not (datasets instanceof Array)
       throw new Error "datasets for merging must be an array"
     url = bamboo_url('datasets','merge')
+    datasets = "[#{'\"'+dataset+'\"' for dataset in datasets}]"
     data =
       datasets: datasets
-    success_cb = (response)-> log response.success if dbg()
+    success_cb = (response)->
+      merged = new bamboo.Dataset(id:response.id)
+      console.log "merged id is #{merged.id}"
+      cb(merged)
+
     opts =
       type: "POST"
       data: data
-    @_run_query "merging datasets #{datasets}", url, false, success_cb, opts, (res)->
-      console.log res
+    @_run_query "merging datasets #{datasets}", url, false, success_cb, opts
 
   update: (rows)->
     ###
