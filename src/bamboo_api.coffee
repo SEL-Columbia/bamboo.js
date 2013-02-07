@@ -6,12 +6,16 @@ dbg = ()-> settings.DEBUG
 jsonify = (args...)-> JSON.stringify.apply @, args
 ensure_jquery = -> throw new Error("jQuery is not available.") unless $?
 
-bamboo_url = (section="datasets", id, name)->
+bamboo_url = (section="datasets", id, operation, name)->
   pieces = [settings.URL, section]
   if id?
     pieces.push id
-    pieces.push name if name?
+    if operation
+      pieces.push operation
+      if name
+        pieces.push name
   pieces.join '/'
+
 
 class Dataset
   constructor: (data) ->
@@ -21,6 +25,16 @@ class Dataset
 
     if @url? and !@id? and @autoload
       @load_from_url()
+
+    @allowed_aggregation = ['max',
+                           'min',
+                           'mean',
+                           'median',
+                           'sum',
+                           'ratio',
+                           'count',
+                           'argmax',
+                           'newest']
 
   extend: (obj, override=false) ->
     @[key] = val for key, val of obj when override or !@[key]?
@@ -109,6 +123,10 @@ class Dataset
       sync_cb.apply @, [response, status, _req] if !!sync_cb
 
   add_calculation: (name, formula, sync_cb=false) ->
+    if @_is_aggregation formula
+      throw new Error "Error: this formula indicates it's aggregation
+        instead of calculation, please use Dataset.add_aggregation instead"
+
     calc_id   = _uniqueId("calculation")
     url       = bamboo_url("calculations", @id)
     data =
@@ -120,25 +138,129 @@ class Dataset
       data: data
     @_run_query "calculation_#{calc_id}", url, false, success_cb, opts
 
+  _is_aggregation: (formula)->
+    keyword_sel = @allowed_aggregation.join "|"
+    regex_str = "^(#{keyword_sel})\\([^\\)]+\\)$"
+    regex = new RegExp(regex_str)
+    if formula.match(regex) isnt null
+      return true
+    return false
+
   query_calculations: (sync_cb=false) ->
     @_run_query "calculations", bamboo_url("datasets", @id, "calculations"), false, (r)->
       @calculations = r
       sync_cb.apply @, [response, status, _req] if !!sync_cb
 
+#  remove_calculation: (name) ->
+#    url = bamboo_url("calculations", @id)
+#    data =
+#      name: name
+#    success_cb = (response)-> log response.success if dbg()
+#    opts =
+#      type: 'DELETE'
+#      data: data
+#    @_run_query "delete calculation under name #{name} in dataset #{@id}",
+#      url, false, success_cb, opts
+
   remove_calculation: (name) ->
-    url = bamboo_url("calculations", @id)
-    data =
-      name: name
+    url = bamboo_url("datasets", @id, "calculations", name)
     success_cb = (response)-> log response.success if dbg()
     opts =
       type: 'DELETE'
-      data: data
-    @_run_query "delete calculation under name #{name} in dataset #{@id}", url, false, success_cb, opts
+    @_run_query "delete calculation under name #{name} in dataset #{@id}",
+      url, false, success_cb, opts
+
+  add_aggregations:(name, formula, groups=null, sync_cb=false)->
+    if @_is_aggregation(formula)
+      agg_id = _uniqueId "aggregation"
+      url = bamboo_url("calculations", @id)
+      data =
+        name: name
+        formula: formula
+      if groups isnt null
+        if groups instanceof Array
+          data['group'] = groups.join()
+        else
+          throw new Error "group must be an array"
+
+      success_cb = (response)-> log response.success if dbg()
+      opts =
+        type: 'POST'
+        data: data
+      @_run_query "aggregation_#{agg_id}", url, false, success_cb, opts
+
+    else
+      throw new Error "ill formated aggregation formula, perhaps you are
+        looking for calculation instead of aggregation?"
 
   query_aggregations: (sync_cb=false) ->
     @_run_query "aggregations", bamboo_url("datasets", @id, "aggregations"), !!sync_cb, (r)->
       @aggregations = r
       sync_cb.apply @, [response, status, _req] if !!sync_cb
+
+  remove_aggregations: (name) ->
+    @remove_calculation(name)
+
+  join: (left, right, on_column)->
+    ###
+    Create a new dataset that is the result of a join, where this
+    left_dataset is the lefthand side and *right_dataset* is the
+    righthand side and *on* is the column on which to join.
+    The column that is joined on must be unique in the righthand side
+    and must exist in both datasets.
+    ###
+    url = bamboo_url("datasets","join")
+    data =
+      dataset_id: left.id
+      other_dataset_id: right.id
+      on: on_column
+    success_cb = (response)-> log response.success if dbg()
+    opts =
+      type: "POST"
+      data: data
+    @_run_query "joined datasets #{left} and #{right}", url, false, success_cb, opts
+      
+
+  merge:(datasets,cb)->
+    ###
+    Create a new dataset that is a row-wise merge of those in *datasets*.
+    Returns the new merged dataset.
+    ###
+    if not (datasets instanceof Array)
+      throw new Error "datasets for merging must be an array"
+    url = bamboo_url('datasets','merge')
+    datasets = "[#{'\"'+dataset.id+'\"' for dataset in datasets}]"
+    data =
+      datasets: datasets
+    success_cb = (response)->
+      merged = new bamboo.Dataset(id:response.id)
+      console.log "merged id is #{merged.id}"
+      cb(merged)
+
+    opts =
+      type: "POST"
+      data: data
+    @_run_query "merging datasets #{datasets}", url, false, success_cb, opts
+
+  update: (rows)->
+    ###
+    Updates this dataset with the rows given in {column: value} format.
+    Any unspecified columns will result in n/a values.
+    ###
+    if not (rows instanceof Array)
+      throw new Error "rows must be an array"
+    if rows.length is 0
+      throw new Error "rows cannot be empty"
+    url = bamboo_url('datasets', @id)
+    # massage rows
+    jsonified_rows = JSON.stringify rows
+    data =
+      update: jsonified_rows
+    success_cb = (response)-> log response.success if dbg()
+    opts =
+      type: "PUT"
+      data: data
+    @_run_query "updating dataset #{@id}", url, false, success_cb, opts
 
   delete: ()->
     complete = false
