@@ -1,13 +1,29 @@
 test_data =
   id : "fdf66b3a8a5b4617bd12f56e70e394a1"
   csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
+  csv_file_merge: "https://www.dropbox.com/s/5aja0nlcufn65vd/sample_merge.csv?dl=1"
+  csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv?dl=1"
+  self_csv_file : "sample_dataset_school_survey.csv"
+  self_csv_file_merge: "sample_merge.csv"
+  self_csv_file_join: "sample_join.csv"
 
 tmp_ds = "1325a517cc33443bbc2a09b39adae401"
+
+file_switch = (type)->
+  switch type
+    when "origin" then test_data.self_csv_file
+    when "merge" then test_data.self_csv_file_merge
+    when "join" then test_data.self_csv_file_join
+file_url= (branch,type)->
+  file_name = file_switch(type)
+  domain = "https://raw.github.com/modilabs/bamboo.js/"
+  result = "#{domain}#{branch}/public/csv/#{file_name}"
+
 
 describe "bamboo api works", ->
   beforeEach ->
     @available_opts =
-      url: test_data.csv_file
+      url: file_url("jan_15","origin")
       autoload: false
       id: test_data.id
     @build_dataset = (keys)=>
@@ -48,9 +64,8 @@ describe "bamboo api works", ->
     expect(query2.length).toBe(2)
   it "can get the summary", ->
     dataset   = @build_dataset('id', 'autoload')
-
     summary = dataset.summary()
-    expect(Object.keys(summary).sort().join(', ')).toBe('grade, income, name, sex') if Object.keys?
+    expect Object.keys.toBeDefined
 
   it "can query summary", ->
     dataset = @build_dataset('id', 'autoload')
@@ -60,7 +75,7 @@ describe "bamboo api works", ->
   it "can create and delete a dataset", ->
     new_set_id = false
     runs ->
-      new_dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+      new_dataset = new bamboo.Dataset({url: file_url("jan_15","origin"), autoload: true})
       expect(new_dataset.id).toBeTruthy()
       new_set_id = new_dataset.id
       log "Newly created dataset id: '#{new_set_id}'"
@@ -72,12 +87,14 @@ describe "bamboo api works", ->
     runs ->
       expect(bamboo.dataset_exists(new_set_id)).not.toBeTruthy()
 
+    
 
 describe "calculations", ->
   beforeEach ->
-    @dataset = new bamboo.Dataset({url: test_data.csv_file, autoload: true})
+    @dataset = new bamboo.Dataset({url: file_url("jan_15","origin"), autoload: true})
   afterEach ->
     @dataset.delete()
+
 
   it "adds and deletes simple calculation", ->
     waits 3000
@@ -107,16 +124,81 @@ describe "calculations", ->
       expect(@dataset.calculations[0]).toBeDefined()
       expect(@dataset.calculations[0].name).toEqual("above_3rd_grade")
 
+describe "aggregations", ->
+  beforeEach ->
+    @dataset = new bamboo.Dataset({url: file_url("jan_15","origin"), autoload: true})
+  afterEach ->
+    @dataset.delete()
+
+  it "checks aggregation form calculation", ->
+    true_st = @dataset._is_aggregation "sum(formula)"
+    expect(true_st).toBeTruthy()
+    false_st = @dataset._is_aggregation "murica"
+    expect(false_st).not.toBeTruthy()
+    false_st_2 = @dataset._is_aggregation "sum())"
+    expect(false_st_2).not.toBeTruthy()
+
+  it "can add and remove aggregation", ->
+    waits 2000
+    runs ->
+      @dataset.add_aggregations("total_income","sum(income)")
+    waits 2000
+    runs ->
+      @dataset.query_aggregations()
+      expect(@dataset.aggregations).toBeDefined()
+      expect(@dataset.aggregations[""]).toBeDefined()
+      @dataset.remove_aggregations("total_income",(err,ret)->
+        expect(ret).toContain("deleted calculation: 'total_income' for dataset:")
+      )
+      
   it "can query aggregations", ->
     waits 2000
     runs ->
-      @dataset.add_calculation("total_income", "sum(income)")
+      @dataset.add_aggregations("total_income", "sum(income)")
     waits 2000
     runs ->
       # at the moment, this only works because an aggregation has been created above, if there are no calculations, bamboo returns a 400(Bad Request)
       @dataset.query_aggregations()
       expect(@dataset.aggregations).toBeDefined()
       expect(@dataset.aggregations[""]).toBeDefined()
+
+describe "updates, join, merge", ->
+  beforeEach ->
+    @dataset = new bamboo.Dataset({url: file_url("jan_15","origin"), autoload: true})
+
+  afterEach ->
+    @dataset.delete()
+
+  it "can update data in an dataset", ->
+    update_data =
+      name: "new_student"
+      grade: 1
+      income: 30
+      sex: "M"
+    @dataset.update([update_data])
+
+  it "can merge a few datasets together", ->
+    @dataset_merge = new bamboo.Dataset({url: file_url("jan_15","merge"), autoload: true})
+    datasets =[@dataset, @dataset_merge]
+    dataset_id = @dataset.id
+    @dataset.merge(datasets, (merged)->
+      expect(merged.id).not.toEqual(dataset_id)
+    )
+    @dataset_merge.delete()
+
+
+  it "can join two datasets on a certain column", ->
+    runs ->
+      @dataset_join = new bamboo.Dataset({url: file_url("jan_15","join"), autoload: true})
+    waits 2000
+    runs ->
+      @dataset.join(@dataset, @dataset_join, "name")
+
+      @dataset_join.delete()
+
+  return
+
+
 
 ###
 based on underscore.js _.pick
