@@ -252,8 +252,10 @@ class Dataset
     if rows.length is 0
       throw new Error "rows cannot be empty"
     url = bamboo_url('datasets', @id)
+    # massage rows
+    jsonified_rows = JSON.stringify rows
     data =
-      update: rows
+      update: jsonified_rows
     success_cb = (response)-> log response.success if dbg()
     opts =
       type: "PUT"

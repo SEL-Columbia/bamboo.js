@@ -170,6 +170,12 @@ describe "updates, join, merge", ->
     @dataset.delete()
 
   it "can update data in an dataset", ->
+    update_data =
+      name: "new_student"
+      grade: 1
+      income: 30
+      sex: "M"
+    @dataset.update([update_data])
 
   it "can merge a few datasets together", ->
     @dataset_merge = new bamboo.Dataset({url: file_url("jan_15","merge"), autoload: true})
