@@ -173,20 +173,22 @@ describe "updates, join, merge", ->
 
   it "can merge a few datasets together", ->
     @dataset_merge = new bamboo.Dataset({url: file_url("jan_15","merge"), autoload: true})
-    datasets =[@dataset.id, @dataset_merge.id]
+    datasets =[@dataset, @dataset_merge]
     dataset_id = @dataset.id
-    console.log dataset_id
     @dataset.merge(datasets, (merged)->
-      console.log merged.id
       expect(merged.id).not.toEqual(dataset_id)
     )
     @dataset_merge.delete()
 
 
   it "can join two datasets on a certain column", ->
-    @dataset_join = new bamboo.Dataset({url: file_url("jan_15","join"), autoload: true})
+    runs ->
+      @dataset_join = new bamboo.Dataset({url: file_url("jan_15","join"), autoload: true})
+    waits 2000
+    runs ->
+      @dataset.join(@dataset, @dataset_join, "name")
 
-    @dataset_join.delete()
+      @dataset_join.delete()
 
   return
 

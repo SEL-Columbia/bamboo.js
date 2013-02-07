@@ -211,14 +211,14 @@ class Dataset
     ###
     url = bamboo_url("datasets","join")
     data =
-      dataset_id: left
-      other_dataset_id: right
+      dataset_id: left.id
+      other_dataset_id: right.id
       on: on_column
     success_cb = (response)-> log response.success if dbg()
     opts =
       type: "POST"
       data: data
-    @_run_query "merging datasets #{datasets}", url, false, success_cb, opts
+    @_run_query "joined datasets #{left} and #{right}", url, false, success_cb, opts
       
 
   merge:(datasets,cb)->
@@ -229,7 +229,7 @@ class Dataset
     if not (datasets instanceof Array)
       throw new Error "datasets for merging must be an array"
     url = bamboo_url('datasets','merge')
-    datasets = "[#{'\"'+dataset+'\"' for dataset in datasets}]"
+    datasets = "[#{'\"'+dataset.id+'\"' for dataset in datasets}]"
     data =
       datasets: datasets
     success_cb = (response)->
