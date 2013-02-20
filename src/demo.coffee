@@ -12,17 +12,29 @@ class DemoFieldset
 $ -> c = $('#main').empty(); fs.build(c) for fs in fieldsets
 
 demo "New Dataset", ()->
-  @code = "var dataset = new bamboo.Dataset({url: 'http://bitly.com/ZfzBwP'});"
-
-demo "Check if dataset exists", ()->
-  @code = "bamboo.dataset_exists('nonexistentdataset_id');"
+  @code = "var dataset = new bamboo.Dataset({id: 'fa871c15b7cd4ab69f7c3bff83ac6107'});"
 
 demo "Get info", ()->
   @code = "dataset.query_info();"
 
-demo "Add calculation", ()->
+demo "Add aggregation calculation(s)", ()->
   @code = """
-    dataset.add_calculation("above_3rd_grade", "grade > 3");
-    dataset.query_dataset();
-    console.log(dataset.data);
+    dataset.query_calculations();
+    if(dataset.calculations.length == 0) {
+        // ONLY ADD THE AGGREGATIONS ONCE
+        dataset.add_aggregations('ratio_polls_open', 'ratio(a_a in ["1"], 1)', ['governorate']);
+        dataset.add_aggregations('ballots_counted', 'ratio(b_e in ["1"],1)', ['governorate']);
+        dataset.add_aggregations('ballot_boxes_empty_before_voting', 'ratio(b_g in ["1"],1)', ['governorate']);
+        dataset.add_aggregations('ballot_boxes_closed_with_HEC_seal', 'ratio(b_h in ["1"],1)', ['governorate']);
+        dataset.add_aggregations('polling_center_handycap_accessible', 'ratio(b_j in ["1"],1)', ['governorate']);
+        dataset.add_aggregations('polling_center_have_indelible_ink', 'ratio(b_k in ["1"],1)', ['governorate']);
+
+    }
+  """
+
+demo "Now get the aggregated dataset, and check its okay", ()->
+  @code = """
+    var aggregatedDatasets = dataset.query_aggregations();
+    var electionDataset = new bamboo.Dataset({id: aggregatedDatasets.aggregations["governorate"]});
     """
+
