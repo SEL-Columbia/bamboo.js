@@ -4,7 +4,8 @@ test_data =
 callAjax = (xhrSettings) ->
   # call the success function using the expected response as defined in the test_data.urls object
   method = if xhrSettings.type then xhrSettings.type else "GET"
-  xhrSettings.success.call(null, mock_data.urls[xhrSettings.url][method])
+  response = mock_data.urls[xhrSettings.url][method]
+  xhrSettings.success.call(null, response)
   return
 
 describe "Bamboo API", ->
@@ -55,6 +56,22 @@ describe "Bamboo API", ->
     it "can query info", ->
       expect(dataset.query_info().info.id).toBe(dataset.id)
       expect(dataset.info.num_rows).toBe(14)
+      return
+
+    it "can query data", ->
+      expect(dataset.data).not.toBeDefined()
+      dataset.query_dataset()
+      expect(dataset.data).toBeDefined()
+      return
+
+    it "can select from dataset", ->
+      select = dataset.select({grade:1})
+      expect(select.length).toBe(14)
+      return
+
+    it "can run a filter query", ->
+      query1 = dataset.query({grade:4})
+      expect(query1.length).toBe(7)
       return
 
     return

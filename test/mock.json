@@ -71,10 +71,235 @@
         },
         "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1":
         {
+            "GET":
+            [
+                {
+                    "name": "Student8",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student9",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student7",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student6",
+                    "grade": 2,
+                    "sex": "M",
+                    "above_3rd_grade": false,
+                    "income": 60,
+                    "percentage": 78.57142857142857
+                },
+                {
+                    "name": "Student5",
+                    "grade": 2,
+                    "sex": "M",
+                    "above_3rd_grade": false,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student4",
+                    "grade": 3,
+                    "sex": "F",
+                    "above_3rd_grade": false,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student12",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 70,
+                    "percentage": 96.42857142857143
+                },
+                {
+                    "name": "Student11",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 60,
+                    "percentage": 78.57142857142857
+                },
+                {
+                    "name": "Student2",
+                    "grade": 2,
+                    "sex": "M",
+                    "above_3rd_grade": false,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student1",
+                    "grade": 1,
+                    "sex": "M",
+                    "above_3rd_grade": false,
+                    "income": 30,
+                    "percentage": 14.285714285714285
+                },
+                {
+                    "name": "Student10",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 60,
+                    "percentage": 78.57142857142857
+                },
+                {
+                    "name": "Student3",
+                    "grade": 3,
+                    "sex": "F",
+                    "above_3rd_grade": false,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student13",
+                    "grade": 4,
+                    "sex": "M",
+                    "above_3rd_grade": true,
+                    "income": 70,
+                    "percentage": 96.42857142857143
+                },
+                {
+                    "name": "Student14",
+                    "grade": 1,
+                    "sex": "M",
+                    "above_3rd_grade": false,
+                    "income": 20,
+                    "percentage": 7.142857142857142
+                }
+            ],
             "DELETE":
             {
 
             }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1?select={\"grade\":1}":
+        {
+            "GET":
+            [
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 2
+                },
+                {
+                    "grade": 2
+                },
+                {
+                    "grade": 3
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 2
+                },
+                {
+                    "grade": 1
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 3
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 1
+                }
+            ]
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1?query={\"grade\":4}":
+        {
+            "GET":
+            [
+                {
+                    "name": "Student8",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student9",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student7",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student12",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 70,
+                    "percentage": 96.42857142857143
+                },
+                {
+                    "name": "Student11",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 60,
+                    "percentage": 78.57142857142857
+                },
+                {
+                    "name": "Student10",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 60,
+                    "percentage": 78.57142857142857
+                },
+                {
+                    "name": "Student13",
+                    "grade": 4,
+                    "sex": "M",
+                    "above_3rd_grade": true,
+                    "income": 70,
+                    "percentage": 96.42857142857143
+                }
+            ]
         }
     }
 }
