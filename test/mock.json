@@ -1,0 +1,80 @@
+{
+    "id": "fdf66b3a8a5b4617bd12f56e70e394a1",
+    "urls":
+    {
+        "/datasets":
+        {
+            "POST":
+            {
+                "id": "fdf66b3a8a5b4617bd12f56e70e394a1"
+            }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/info":
+        {
+            "GET":
+            {
+                "attribution": null,
+                "description": null,
+                "updated_at": "2013-01-08 11:56:38",
+                "num_columns": 6,
+                "id": "fdf66b3a8a5b4617bd12f56e70e394a1",
+                "license": null,
+                "created_at": "2013-01-07 12:41:28",
+                "label": null,
+                "state": "ready",
+                "num_rows": 14,
+                "schema": {
+                    "above_3rd_grade":
+                    {
+                        "olap_type": "dimension",
+                        "cardinality": 2,
+                        "simpletype": "boolean",
+                        "label": "above_3rd_grade"
+                    },
+                    "name":
+                    {
+                        "olap_type": "dimension",
+                        "cardinality": 14,
+                        "simpletype": "string",
+                        "label": "name"
+                    },
+                    "income":
+                    {
+                        "olap_type": "measure",
+                        "cardinality": 5,
+                        "simpletype": "integer",
+                        "label": "income"
+                    },
+                    "grade":
+                    {
+                        "olap_type": "measure",
+                        "cardinality": 4,
+                        "simpletype": "integer",
+                        "label": "grade"
+                    },
+                    "percentage":
+                    {
+                        "olap_type": "measure",
+                        "cardinality": 5,
+                        "simpletype": "float",
+                        "label": "percentage"
+                    },
+                    "sex":
+                    {
+                        "olap_type": "dimension",
+                        "cardinality": 2,
+                        "simpletype": "string",
+                        "label": "sex"
+                    }
+                }
+            }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1":
+        {
+            "DELETE":
+            {
+
+            }
+        }
+    }
+}
