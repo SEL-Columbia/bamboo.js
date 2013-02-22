@@ -286,8 +286,12 @@ dataset_exists = (id)->
   ###
   existence = undefined
   ds = new Dataset({id:id})
-  success_cb  = (a,b,c,d,e)-> existence = true
-  fail_cb     = -> existence = false
+  success_cb  = (a,b,c,d,e) ->
+    existence = true
+    return
+  fail_cb     = ->
+    existence = false
+    return
   opts = {
     error: fail_cb
   }
