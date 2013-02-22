@@ -1,5 +1,4 @@
 {
-    "id": "fdf66b3a8a5b4617bd12f56e70e394a1",
     "urls":
     {
         "/datasets":
@@ -300,6 +299,153 @@
                     "percentage": 96.42857142857143
                 }
             ]
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/summary?select=all":
+        {
+            "GET":
+            {
+                "name":
+                {
+                    "summary":
+                    {
+                        "Student9": 1,
+                        "Student8": 1,
+                        "Student3": 1,
+                        "Student2": 1,
+                        "Student1": 1,
+                        "Student7": 1,
+                        "Student6": 1,
+                        "Student5": 1,
+                        "Student4": 1,
+                        "Student14": 1,
+                        "Student13": 1,
+                        "Student12": 1,
+                        "Student11": 1,
+                        "Student10": 1
+                    }
+                },
+                "grade":
+                {
+                    "summary":
+                    {
+                        "count": 14,
+                        "std": 1.1766968108291043,
+                        "min": 1,
+                        "max": 4,
+                        "50%": 3.5,
+                        "25%": 2,
+                        "75%": 4,
+                        "mean": 3
+                    }
+                },
+                "sex":
+                {
+                    "summary":
+                    {
+                        "M": 6,
+                        "F": 8
+                    }
+                },
+                "above_3rd_grade":
+                {
+                    "summary":
+                    {
+                        "False": 7,
+                        "True": 7
+                    }
+                },
+                "income":
+                {
+                    "summary":
+                    {
+                        "count": 14,
+                        "std": 13.506205330054128,
+                        "min": 20,
+                        "max": 70,
+                        "50%": 50,
+                        "25%": 50,
+                        "75%": 60,
+                        "mean": 51.42857142857143
+                    }
+                },
+                "percentage":
+                {
+                    "summary":
+                    {
+                        "count": 14,
+                        "std": 27.805672371164828,
+                        "min": 7.142857142857142,
+                        "max": 96.42857142857143,
+                        "50%": 42.857142857142854,
+                        "25%": 42.857142857142854,
+                        "75%": 78.57142857142857,
+                        "mean": 53.57142857142857
+                    }
+                }
+            }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/summary?select={\"grade\":1}":
+        {
+            "GET":
+            {
+                "grade":
+                {
+                    "summary":
+                    {
+                        "count": 14,
+                        "std": 1.1766968108291043,
+                        "min": 1,
+                        "max": 4,
+                        "50%": 3.5,
+                        "25%": 2,
+                        "75%": 4,
+                        "mean": 3
+                    }
+                }
+            }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/summary?select={\"grade\":1}&group=sex":
+        {
+            "GET":
+            {
+                "sex":
+                {
+                    "M":
+                    {
+                        "grade":
+                        {
+                            "summary":
+                            {
+                                "count": 6,
+                                "std": 1.0954451150103321,
+                                "min": 1,
+                                "max": 4,
+                                "50%": 2,
+                                "25%": 1.25,
+                                "75%": 2,
+                                "mean": 2
+                            }
+                        }
+                    },
+                    "F":
+                    {
+                        "grade":
+                        {
+                            "summary":
+                            {
+                                "count": 8,
+                                "std": 0.4629100498862757,
+                                "min": 3,
+                                "max": 4,
+                                "50%": 4,
+                                "25%": 3.75,
+                                "75%": 4,
+                                "mean": 3.75
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

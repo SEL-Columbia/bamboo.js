@@ -4,8 +4,11 @@ test_data =
 callAjax = (xhrSettings) ->
   # call the success function using the expected response as defined in the test_data.urls object
   method = if xhrSettings.type then xhrSettings.type else "GET"
-  response = mock_data.urls[xhrSettings.url][method]
-  xhrSettings.success.call(null, response)
+  try
+    response = mock_data.urls[xhrSettings.url][method]
+    xhrSettings.success.call(null, response)
+  catch err
+    xhrSettings.error.call()
   return
 
 describe "Bamboo API", ->
@@ -23,6 +26,29 @@ describe "Bamboo API", ->
     })
     expect(dataset.id).toBeDefined()
     expect(dataset.query_info().info.id).toBe(dataset.id)
+    return
+
+  it "can delete by dataset id", ->
+    dataset = new bamboo.Dataset({
+      url: test_data.csv_file,
+      autoload: true
+    })
+    expect(dataset.id).toBeDefined()
+    deleted = dataset.delete()
+    expect(deleted).toBeTruthy()
+    return
+
+  it "can check if dataset exists", ->
+    dataset = new bamboo.Dataset({
+      url: test_data.csv_file,
+      autoload: true
+    })
+    expect(dataset.id).toBeDefined()
+    exists = bamboo.dataset_exists(dataset.id)
+    expect(exists).toBeTruthy()
+
+    exists = bamboo.dataset_exists("some-none-existsent-id")
+    expect(exists).toBeFalsy()
     return
 
   describe "Query", ->
@@ -72,6 +98,21 @@ describe "Bamboo API", ->
     it "can run a filter query", ->
       query1 = dataset.query({grade:4})
       expect(query1.length).toBe(7)
+      return
+
+    it "can get the summary", ->
+      summary = dataset.summary()
+      expect(dataset.summary_result).toBeDefined()
+
+      # summary with a select
+      select = {"grade": 1}
+      summary = dataset.summary(select)
+      expect(dataset._summaries["summary_#{JSON.stringify(select)}"]).toBeDefined()
+
+      #summary with a select and group
+      group = "sex"
+      summary = dataset.summary(select, group)
+      expect(dataset._summaries["summary_#{JSON.stringify(select)}_#{group}"]).toBeDefined()
       return
 
     return
