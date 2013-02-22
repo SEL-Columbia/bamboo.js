@@ -144,7 +144,9 @@ class Dataset
     data =
       name: name
       formula: formula
+    @_calculations = [] unless @_calculations?
     success_cb = (response) ->
+      @_calculations.push(name)
       log response.success if dbg()
     opts =
       type: 'POST'
