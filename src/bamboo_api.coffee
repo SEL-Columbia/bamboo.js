@@ -40,7 +40,7 @@ class Dataset
     @[key] = val for key, val of obj when override or !@[key]?
 
   load_status: (for_what) ->
-    @_ls[for_what] = LS.not_started if !@_ls[for_what]?
+    @_ls[for_what] or LS.not_started
 
   load_from_url: (url=false, sync_cb=false) ->
     ensure_jquery()
