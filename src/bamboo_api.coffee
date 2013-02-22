@@ -90,9 +90,10 @@ class Dataset
   summary: (summary_select="all", group=null, sync_cb=false)->
     summary_select_str = if typeof summary_select is "string" then summary_select else JSON.stringify(summary_select)
     url = "#{@bamboo_url()}/summary?select=#{summary_select_str}"
-    url = url + "&group=" + group if group
+    url += "&group=#{group}" if group?
     async = !!sync_cb
     summary_tmp_id = "summary_#{summary_select_str}"
+    summary_tmp_id += "_#{group}" if group?
     @_summaries = {} unless @_summaries?
     @_run_query summary_tmp_id, url, async, (r, status, _req)->
       @summary_result = r if summary_select is "all"
