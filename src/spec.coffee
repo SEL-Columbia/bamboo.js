@@ -19,39 +19,41 @@ describe "Bamboo API", ->
       spyOn($, 'ajax').andCallFake(callAjax)
     return
 
-  it "can create from url", ->
-    dataset = new bamboo.Dataset({
-      url: test_data.csv_file,
-      autoload: true
-    })
-    expect(dataset.id).toBeDefined()
-    expect(dataset.query_info().info.id).toBe(dataset.id)
+  describe "Datasets", ->
+    it "can create from url", ->
+      dataset = new bamboo.Dataset({
+        url: test_data.csv_file,
+        autoload: true
+      })
+      expect(dataset.id).toBeDefined()
+      expect(dataset.query_info().info.id).toBe(dataset.id)
+      return
+
+    it "can delete by dataset id", ->
+      dataset = new bamboo.Dataset({
+        url: test_data.csv_file,
+        autoload: true
+      })
+      expect(dataset.id).toBeDefined()
+      deleted = dataset.delete()
+      expect(deleted).toBeTruthy()
+      return
+
+    it "can check if dataset exists", ->
+      dataset = new bamboo.Dataset({
+        url: test_data.csv_file,
+        autoload: true
+      })
+      expect(dataset.id).toBeDefined()
+      exists = bamboo.dataset_exists(dataset.id)
+      expect(exists).toBeTruthy()
+
+      exists = bamboo.dataset_exists("some-none-existsent-id")
+      expect(exists).toBeFalsy()
+      return
     return
 
-  it "can delete by dataset id", ->
-    dataset = new bamboo.Dataset({
-      url: test_data.csv_file,
-      autoload: true
-    })
-    expect(dataset.id).toBeDefined()
-    deleted = dataset.delete()
-    expect(deleted).toBeTruthy()
-    return
-
-  it "can check if dataset exists", ->
-    dataset = new bamboo.Dataset({
-      url: test_data.csv_file,
-      autoload: true
-    })
-    expect(dataset.id).toBeDefined()
-    exists = bamboo.dataset_exists(dataset.id)
-    expect(exists).toBeTruthy()
-
-    exists = bamboo.dataset_exists("some-none-existsent-id")
-    expect(exists).toBeFalsy()
-    return
-
-  describe "Query", ->
+  describe "Queries", ->
     loaded = false
     dataset = undefined
 
@@ -70,6 +72,9 @@ describe "Bamboo API", ->
       waitsFor ()->
         return loaded
       , "dataset to load", 1000
+
+      runs ->
+        expect(dataset.id).toBeDefined()
 
       return
 
@@ -114,6 +119,11 @@ describe "Bamboo API", ->
       summary = dataset.summary(select, group)
       expect(dataset._summaries["summary_#{JSON.stringify(select)}_#{group}"]).toBeDefined()
       return
+
+    return
+
+  describe "Calculations", ->
+
 
     return
 
