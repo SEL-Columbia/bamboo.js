@@ -54,12 +54,15 @@ class Dataset
       type: 'POST'
       dataType: 'json'
       url: bamboo_url('datasets')
-      fail: ()-> @_ls.from_url = LS.failed
+      error: () =>
+        @_ls.from_url = LS.failed
+        return
       success: (response) =>
         @_ls.from_url = LS.complete
         @extend response
         log "dataset.load_from_url() response", jsonify response if dbg()
         sync_cb.apply(@, arguments) if !!sync_cb
+        return
     @
 
   bamboo_url: () ->
@@ -78,6 +81,9 @@ class Dataset
       log "successfully ran #{for_what} query", @ if dbg()
       @_ls[for_what] = LS.complete
       cb.apply(@, [response, status, _req])
+    opts.error = (e) =>
+      log "failed to ran #{for_what} query", @ if dbg()
+      @_ls[for_what] = LS.failed
     @_reqs[for_what] = $.ajax opts
     @
 
