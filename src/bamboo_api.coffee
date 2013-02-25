@@ -151,6 +151,7 @@ class Dataset
         formula: formula
       }
       @calculations.push(calculation)
+      sync_cb.apply @, arguments if sync_cb
       log response.success if dbg()
     opts =
       type: 'POST'

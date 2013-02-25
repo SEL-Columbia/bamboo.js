@@ -129,12 +129,18 @@ describe "Bamboo API", ->
 
     describe "Calculations API", ->
       it "can add and remove simple calculation", ->
+        loaded = false
         calculation_name = "above_3rd_grade"
         waits bamboo_wait_time
 
         runs ->
-          dataset.add_calculation(calculation_name, "grade > 3")
+          dataset.add_calculation calculation_name, "grade > 3", () ->
+            loaded = true
           return
+
+        waitsFor ->
+          return loaded
+        , "calculation to be ready", 1000
 
         runs ->
           expect(dataset.calculations).toBeDefined()
@@ -143,11 +149,11 @@ describe "Bamboo API", ->
           expect(found_calculation).toBeDefined()
           return
 
-        runs ->
-          dataset.remove_calculation(calculation_name)
-          return
+        # wait for calculation to be ready, does it need to be ready before we delete
+        waits bamboo_wait_time
 
         runs ->
+          dataset.remove_calculation(calculation_name)
           found_calculation = _.find dataset.calculations, (calculation) ->
             return calculation.name is calculation_name
           expect(found_calculation).not.toBeDefined()
@@ -155,7 +161,6 @@ describe "Bamboo API", ->
 
         return
 
-      it "", ->
 
 
       return
