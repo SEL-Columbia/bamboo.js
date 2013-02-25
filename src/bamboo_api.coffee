@@ -16,6 +16,16 @@ bamboo_url = (section="datasets", id, operation, name)->
         pieces.push name
   pieces.join '/'
 
+allowed_aggregation = ['max',
+  'min',
+  'mean',
+  'median',
+  'sum',
+  'ratio',
+  'count',
+  'argmax',
+  'newest']
+
 
 class Dataset
   constructor: (data) ->
@@ -25,16 +35,6 @@ class Dataset
 
     if @url? and !@id? and @autoload
       @load_from_url()
-
-    @allowed_aggregation = ['max',
-                           'min',
-                           'mean',
-                           'median',
-                           'sum',
-                           'ratio',
-                           'count',
-                           'argmax',
-                           'newest']
 
   extend: (obj, override=false) ->
     @[key] = val for key, val of obj when override or !@[key]?
@@ -135,7 +135,7 @@ class Dataset
       sync_cb.apply @, [response, status, _req] if !!sync_cb
 
   add_calculation: (name, formula, sync_cb=false) ->
-    if @_is_aggregation formula
+    if is_aggregation formula
       throw new Error "Error: this formula indicates it's aggregation
         instead of calculation, please use Dataset.add_aggregation instead"
 
@@ -157,14 +157,6 @@ class Dataset
       type: 'POST'
       data: data
     @_run_query "calculation_#{calc_id}", url, false, success_cb, opts
-
-  _is_aggregation: (formula)->
-    keyword_sel = @allowed_aggregation.join "|"
-    regex_str = "^(#{keyword_sel})\\([^\\)]+\\)$"
-    regex = new RegExp(regex_str)
-    if formula.match(regex) isnt null
-      return true
-    return false
 
   query_calculations: (sync_cb=false) ->
     @_run_query "calculations", bamboo_url("datasets", @id, "calculations"), false, (r)->
@@ -196,7 +188,7 @@ class Dataset
       url, false, success_cb, opts
 
   add_aggregations:(name, formula, groups=null, sync_cb=false)->
-    if @_is_aggregation(formula)
+    if is_aggregation(formula)
       agg_id = _uniqueId "aggregation"
       url = bamboo_url("calculations", @id)
       data =
@@ -316,6 +308,14 @@ dataset_exists = (id)->
   ds._run_query "existence", "#{ds.bamboo_url()}", false, success_cb, opts
   existence
 
+is_aggregation = (formula)->
+  keyword_sel = allowed_aggregation.join "|"
+  regex_str = "^(#{keyword_sel})\\([^\\)]+\\)$"
+  regex = new RegExp(regex_str)
+  if formula.match(regex) isnt null
+    return true
+  return false
+
 
 # load statuses object has key == value. It's an easy-to-reference dictionary
 # used only within this file.
@@ -327,9 +327,10 @@ LS =
   failed:         "failed"
 
 @bamboo =
-	Dataset: Dataset
-	dataset_exists: dataset_exists
-	settings: settings
+  Dataset: Dataset
+  dataset_exists: dataset_exists
+  settings: settings
+  is_aggregation: is_aggregation
 
 noop = ->
 _uniqueIdCount = 0

@@ -23,6 +23,15 @@ describe "Bamboo API", ->
       spyOn($, 'ajax').andCallFake(callAjax)
     return
 
+  it "distinguishes aggregations from calculations", ->
+    true_st = bamboo.is_aggregation "sum(formula)"
+    expect(true_st).toBeTruthy()
+    false_st = bamboo.is_aggregation "murica"
+    expect(false_st).not.toBeTruthy()
+    false_st_2 = bamboo.is_aggregation "sum())"
+    expect(false_st_2).not.toBeTruthy()
+    return
+
   describe "Datasets", ->
     it "can create from url", ->
       dataset = new bamboo.Dataset({
@@ -55,6 +64,7 @@ describe "Bamboo API", ->
       exists = bamboo.dataset_exists("some-none-existsent-id")
       expect(exists).toBeFalsy()
       return
+
     return
 
   describe "Data APIs", ->
@@ -182,6 +192,7 @@ describe "Bamboo API", ->
           return
 
         return
+
 
       return
 
