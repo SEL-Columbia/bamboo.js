@@ -446,6 +446,20 @@
                     }
                 }
             }
+        },
+        "/calculations/fdf66b3a8a5b4617bd12f56e70e394a1":
+        {
+            "POST":
+            {
+                "success": "created calculation: above_3rd_grade for dataset: 84072ce4e6614be2b3b7aff3d44bcdeb"
+            }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/calculations/above_3rd_grade":
+        {
+            "DELETE":
+            {
+                "success": "deleted calculation: 'above_3rd_grade' for dataset: 84072ce4e6614be2b3b7aff3d44bcdeb"
+            }
         }
     }
 }
