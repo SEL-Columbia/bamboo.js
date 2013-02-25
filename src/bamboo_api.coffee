@@ -144,9 +144,13 @@ class Dataset
     data =
       name: name
       formula: formula
-    @_calculations = [] unless @_calculations?
+    @calculations = [] unless @calculations?
     success_cb = (response) ->
-      @_calculations.push(name)
+      calculation = {
+        name: name,
+        formula: formula
+      }
+      @calculations.push(calculation)
       log response.success if dbg()
     opts =
       type: 'POST'
@@ -179,7 +183,12 @@ class Dataset
 
   remove_calculation: (name) ->
     url = bamboo_url("datasets", @id, "calculations", name)
-    success_cb = (response)-> log response.success if dbg()
+    success_cb = (response) ->
+      # find the named calculation and remove it from our list
+      calculation = _.find @calculations, (calculation) ->
+        return calculation.name is name
+      @calculations.pop(calculation) if calculation
+      log response.success if dbg()
     opts =
       type: 'DELETE'
     @_run_query "delete calculation under name #{name} in dataset #{@id}",
