@@ -161,7 +161,27 @@ describe "Bamboo API", ->
 
         return
 
+      it "can query calculations", ->
+        loaded = false
 
+        waits bamboo_wait_time
+
+        runs ->
+          expect(dataset.calculations).not.toBeDefined()
+          dataset.query_calculations ->
+            loaded = true
+            return
+          return
+
+        waitsFor ->
+          return loaded
+        , "calculation's query to return", 1000
+
+        runs ->
+          expect(dataset.calculations).toBeDefined()
+          return
+
+        return
 
       return
 
