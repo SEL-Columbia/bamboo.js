@@ -200,7 +200,9 @@ class Dataset
         else
           throw new Error "group must be an array"
 
-      success_cb = (response)-> log response.success if dbg()
+      success_cb = (response)->
+        sync_cb.apply(@, arguments) if sync_cb
+        log response.success if dbg()
       opts =
         type: 'POST'
         data: data
@@ -213,10 +215,17 @@ class Dataset
   query_aggregations: (sync_cb=false) ->
     @_run_query "aggregations", bamboo_url("datasets", @id, "aggregations"), !!sync_cb, (r)->
       @aggregations = r
-      sync_cb.apply @, [response, status, _req] if !!sync_cb
+      sync_cb.apply @, arguments if !!sync_cb
 
-  remove_aggregations: (name) ->
-    @remove_calculation(name)
+  remove_aggregations: (name, sync_cb=false) ->
+    url = bamboo_url("datasets", @id, "calculations", name)
+    success_cb = (response) ->
+      sync_cb.apply(@, arguments) if !!sync_cb
+      log response.success if dbg()
+    opts =
+      type: 'DELETE'
+    @_run_query "delete aggregation under name #{name} in dataset #{@id}",
+    url, false, success_cb, opts
 
   join: (left, right, on_column)->
     ###

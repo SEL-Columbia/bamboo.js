@@ -451,14 +451,14 @@
         {
             "POST":
             {
-                "success": "created calculation: above_3rd_grade for dataset: 84072ce4e6614be2b3b7aff3d44bcdeb"
+                "success": "created calculation: above_3rd_grade for dataset: fdf66b3a8a5b4617bd12f56e70e394a1"
             }
         },
         "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/calculations/above_3rd_grade":
         {
             "DELETE":
             {
-                "success": "deleted calculation: 'above_3rd_grade' for dataset: 84072ce4e6614be2b3b7aff3d44bcdeb"
+                "success": "deleted calculation: 'above_3rd_grade' for dataset: fdf66b3a8a5b4617bd12f56e70e394a1"
             }
         },
         "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/calculations":
@@ -473,6 +473,20 @@
                     "formula": "grade < 3"
                 }
             ]
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/calculations/total_income":
+        {
+            "DELETE":
+            {
+                "success": "deleted calculation: 'total_income' for dataset: fdf66b3a8a5b4617bd12f56e70e394a1"
+            }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/aggregations":
+        {
+            "GET":
+            {
+                "": "5178aa052c4d446c891c36b6d2698b6b"
+            }
         }
     }
 }

@@ -193,6 +193,60 @@ describe "Bamboo API", ->
 
         return
 
+      return
+
+    describe "Aggreations API", ->
+      beforeEach ->
+        loaded = false
+        response = undefined
+
+        waits bamboo_wait_time
+
+        runs ->
+          expect(dataset.aggregations).not.toBeDefined()
+          dataset.add_aggregations "total_income", "sum(income)", null, (r)->
+            response = r
+            loaded = true
+            return
+          return
+
+        waitsFor ->
+          return loaded
+        , "aggregation to be created", 1000
+
+        runs ->
+          expect(response.success).toContain("created calculation")
+          return
+
+        return
+
+      afterEach ->
+        response = undefined
+        runs ->
+          dataset.remove_aggregations "total_income", (r)->
+            response = r
+            return
+          expect(response.success).toContain("deleted calculation: 'total_income'")
+          return
+        return
+
+      it "can query aggregations", ->
+        loaded = false
+        runs ->
+          dataset.query_aggregations ->
+            loaded = true
+            return
+          return
+
+        waitsFor ->
+          return loaded
+        , "query_aggregations to return", 1000
+
+        runs ->
+          expect(dataset.aggregations).toBeDefined()
+          return
+
+        return
 
       return
 
