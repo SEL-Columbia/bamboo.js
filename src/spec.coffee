@@ -36,6 +36,9 @@ data_ready_callback = (response)->
     , Math.round(wait_time/MAX_READY_RETRIES)# distrubute calls by retries and wait time
   return
 
+most_recent_ajax_call_arg_keys = (arg_index=0, param)->
+  return _.keys($.ajax.mostRecentCall.args[arg_index][param])
+
 describe "Bamboo API", ->
   beforeEach ->
     if bamboo.settings.URL.match(/^http/)
@@ -327,6 +330,7 @@ describe "Bamboo API", ->
         runs ->
           dataset.merge [dataset.id, dataset_for_merge.id], (result)->
             merged_dataset = result
+          expect(most_recent_ajax_call_arg_keys(0, "data")).toContain("dataset_ids")
           return
 
         waitsFor ->
