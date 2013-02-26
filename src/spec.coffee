@@ -264,11 +264,18 @@ describe "Bamboo API", ->
         runs ->
           dataset.update [update_data], (r)->
             response = r
+            return
           return
+
+        waitsFor ->
+          return response isnt undefined
+        , "update call to return", 1000
 
         runs ->
           #bamboo returns the dataset id after an update
           expect(response.id).toBeDefined()
+          return
+
         return
 
       return

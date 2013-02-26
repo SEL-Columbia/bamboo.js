@@ -288,7 +288,7 @@ class Dataset
     opts =
       type: "PUT"
       data: data
-    @_run_query "updating dataset #{@id}", url, false, success_cb, opts
+    @_run_query "updating dataset #{@id}", url, !!sync_cb, success_cb, opts
 
   delete: ()->
     complete = false
