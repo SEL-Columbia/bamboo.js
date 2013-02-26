@@ -187,7 +187,7 @@
             ],
             "DELETE":
             {
-
+                "success": "deleted dataset: fdf66b3a8a5b4617bd12f56e70e394a1"
             },
             "PUT":
             {
@@ -490,6 +490,20 @@
             "GET":
             {
                 "": "5178aa052c4d446c891c36b6d2698b6b"
+            }
+        },
+        "/datasets/merge":
+        {
+            "POST":
+            {
+                "id": "5bf79697cab7478ca1c0654ee98d37c7"
+            }
+        },
+        "/datasets/5bf79697cab7478ca1c0654ee98d37c7":
+        {
+            "DELETE":
+            {
+                "success": "deleted dataset: 5bf79697cab7478ca1c0654ee98d37c7"
             }
         }
     }

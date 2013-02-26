@@ -4,7 +4,7 @@ test_data =
   csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv?dl=1"
 
 # time to wait for bamboo to do its magic in ms
-BAMBOO_WAIT_TIME = 3000
+BAMBOO_WAIT_TIME = 5000
 
 # wait time used to
 wait_time = BAMBOO_WAIT_TIME
@@ -300,7 +300,7 @@ describe "Bamboo API", ->
 
       it "can merge datasets", ->
         loaded = false
-
+        merged_dataset = undefined
         # create the second dataset
         dataset_for_merge = new bamboo.Dataset()
         runs ->
@@ -325,8 +325,24 @@ describe "Bamboo API", ->
         , "dataset to be ready", wait_time
 
         runs ->
-          # merge datasets
+          dataset.merge [dataset.id, dataset_for_merge.id], (result)->
+            merged_dataset = result
           return
+
+        waitsFor ->
+          return merged_dataset isnt undefined
+        , "datasets to be merged", 3000
+
+        runs ->
+          expect(merged_dataset.id).toBeDefined()
+          return
+
+        # delete the second and merged datasets
+        runs ->
+          expect(dataset_for_merge.delete()).toBeTruthy()
+          expect(merged_dataset.delete()).toBeTruthy()
+          return
+
         return
 
       return
