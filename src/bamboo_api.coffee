@@ -255,7 +255,7 @@ class Dataset
     if not (datasets instanceof Array)
       throw new Error "datasets for merging must be an array"
     url = bamboo_url('datasets','merge')
-    datasets = "[#{'\"'+dataset.id+'\"' for dataset in datasets}]"
+    datasets = JSON.stringify(datasets)
     data =
       datasets: datasets
     success_cb = (response)->
