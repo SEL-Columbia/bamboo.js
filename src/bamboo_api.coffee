@@ -237,8 +237,8 @@ class Dataset
     ###
     url = bamboo_url("datasets","join")
     data =
-      dataset_id: left.id
-      other_dataset_id: right.id
+      dataset_id: left
+      other_dataset_id: right
       on: on_column
     success_cb = (response)-> log response.success if dbg()
     opts =
