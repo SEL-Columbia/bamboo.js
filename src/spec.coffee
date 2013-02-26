@@ -1,8 +1,19 @@
 test_data =
   csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
+  csv_file_merge: "https://www.dropbox.com/s/5aja0nlcufn65vd/sample_merge.csv?dl=1"
+  csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv?dl=1"
 
 # time to wait for bamboo to do its magic in ms
-bamboo_wait_time = 0
+BAMBOO_WAIT_TIME = 3000
+
+# wait time used to
+wait_time = BAMBOO_WAIT_TIME
+
+# max number of ready state retries allowed
+MAX_READY_RETRIES = 3
+
+# the current retry count - always reset to 0 before starting a data_ready_callback sequence
+retry_count = 0
 
 callAjax = (xhrSettings) ->
   # call the success function using the expected response as defined in the test_data.urls object
@@ -16,13 +27,22 @@ callAjax = (xhrSettings) ->
     xhrSettings.error.call()
   return
 
+# poll dataset's ready state MAX_READY_RETRIES times
+data_ready_callback = (response)->
+  if response.state isnt "ready" and retry_count++ < MAX_READY_RETRIES
+    # query info again, wait
+    setTimeout =>
+      @query_info data_ready_callback
+    , Math.round(wait_time/MAX_READY_RETRIES)# distrubute calls by retries and wait time
+  return
+
 describe "Bamboo API", ->
   beforeEach ->
     if bamboo.settings.URL.match(/^http/)
       spyOn($, 'ajax').andCallThrough()
-      bamboo_wait_time = 3000
     else
       spyOn($, 'ajax').andCallFake(callAjax)
+      wait_time = 0
     return
 
   it "distinguishes aggregations from calculations", ->
@@ -143,7 +163,7 @@ describe "Bamboo API", ->
       it "can add and remove simple calculation", ->
         loaded = false
         calculation_name = "above_3rd_grade"
-        waits bamboo_wait_time
+        waits wait_time
 
         runs ->
           dataset.add_calculation calculation_name, "grade > 3", () ->
@@ -162,7 +182,7 @@ describe "Bamboo API", ->
           return
 
         # wait for calculation to be ready, does it need to be ready before we delete
-        waits bamboo_wait_time
+        waits wait_time
 
         runs ->
           dataset.remove_calculation(calculation_name)
@@ -176,7 +196,7 @@ describe "Bamboo API", ->
       it "can query calculations", ->
         loaded = false
 
-        waits bamboo_wait_time
+        waits wait_time
 
         runs ->
           expect(dataset.calculations).not.toBeDefined()
@@ -202,7 +222,7 @@ describe "Bamboo API", ->
         loaded = false
         response = undefined
 
-        waits bamboo_wait_time
+        waits wait_time
 
         runs ->
           expect(dataset.aggregations).not.toBeDefined()
@@ -276,6 +296,37 @@ describe "Bamboo API", ->
           expect(response.id).toBeDefined()
           return
 
+        return
+
+      it "can merge datasets", ->
+        loaded = false
+
+        # create the second dataset
+        dataset_for_merge = new bamboo.Dataset()
+        runs ->
+          dataset_for_merge.load_from_url test_data.csv_file_merge, ->
+            loaded = true
+            return
+
+        waitsFor ->
+          return loaded
+        , "load_from_url to return", 2000
+
+        runs ->
+          expect(dataset_for_merge.id).toBeDefined()
+
+        runs ->
+          retry_count = 0
+          data_ready_callback.call(dataset_for_merge, {state: "pending"})
+          return
+
+        waitsFor ->
+          return dataset_for_merge.info and dataset_for_merge.info.state is "ready"
+        , "dataset to be ready", wait_time
+
+        runs ->
+          # merge datasets
+          return
         return
 
       return
