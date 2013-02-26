@@ -227,7 +227,7 @@ class Dataset
     @_run_query "delete aggregation under name #{name} in dataset #{@id}",
     url, false, success_cb, opts
 
-  join: (left, right, on_column)->
+  join: (left, right, on_column, cb)->
     ###
     Create a new dataset that is the result of a join, where this
     left_dataset is the lefthand side and *right_dataset* is the
@@ -240,7 +240,10 @@ class Dataset
       dataset_id: left
       other_dataset_id: right
       on: on_column
-    success_cb = (response)-> log response.success if dbg()
+    success_cb = (response)->
+      joined = new bamboo.Dataset(id:response.id)
+      cb.call null, joined
+      log response.success if dbg()
     opts =
       type: "POST"
       data: data
