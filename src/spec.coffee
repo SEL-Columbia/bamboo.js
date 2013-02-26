@@ -120,10 +120,18 @@ describe "Bamboo API", ->
 
       waitsFor ()->
         return loaded
-      , "dataset to load", 1000
+      , "dataset to load", 2000
 
+      # poll the dataset's ready state
       runs ->
+        retry_count = 0
         expect(dataset.id).toBeDefined()
+        data_ready_callback.call(dataset, {state: "pending"})
+        return
+
+      waitsFor ->
+        return dataset.info and dataset.info.state is "ready"
+      , "dataset to be ready", BAMBOO_WAIT_TIME
 
       return
 
