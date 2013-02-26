@@ -268,7 +268,7 @@ class Dataset
       data: data
     @_run_query "merging datasets #{datasets}", url, false, success_cb, opts
 
-  update: (rows)->
+  update: (rows, sync_cb=false)->
     ###
     Updates this dataset with the rows given in {column: value} format.
     Any unspecified columns will result in n/a values.
@@ -282,7 +282,9 @@ class Dataset
     jsonified_rows = JSON.stringify rows
     data =
       update: jsonified_rows
-    success_cb = (response)-> log response.success if dbg()
+    success_cb = (response)->
+      sync_cb.apply @, arguments if sync_cb
+      log response.success if dbg()
     opts =
       type: "PUT"
       data: data

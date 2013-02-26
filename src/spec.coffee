@@ -9,6 +9,8 @@ callAjax = (xhrSettings) ->
   method = if xhrSettings.type then xhrSettings.type else "GET"
   try
     response = mock_data.urls[xhrSettings.url][method]
+    if response == undefined
+      throw new TypeError("urls.#{xhrSettings.url}.#{method} is not defined.")
     xhrSettings.success.call(null, response)
   catch err
     xhrSettings.error.call()
@@ -212,7 +214,7 @@ describe "Bamboo API", ->
 
         waitsFor ->
           return loaded
-        , "aggregation to be created", 1000
+        , "add_aggregations to return", 1000
 
         runs ->
           expect(response.success).toContain("created calculation")
@@ -246,6 +248,27 @@ describe "Bamboo API", ->
           expect(dataset.aggregations).toBeDefined()
           return
 
+        return
+
+      return
+
+    describe "Updates, joins and merges", ->
+      it "can update data in an dataset", ->
+        response = undefined
+        update_data =
+          name: "new_student"
+          grade: 1
+          income: 30
+          sex: "M"
+
+        runs ->
+          dataset.update [update_data], (r)->
+            response = r
+          return
+
+        runs ->
+          #bamboo returns the dataset id after an update
+          expect(response.id).toBeDefined()
         return
 
       return

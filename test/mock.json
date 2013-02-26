@@ -188,6 +188,10 @@
             "DELETE":
             {
 
+            },
+            "PUT":
+            {
+                "id": "fdf66b3a8a5b4617bd12f56e70e394a1"
             }
         },
         "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1?select={\"grade\":1}":
