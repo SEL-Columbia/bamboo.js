@@ -184,7 +184,6 @@ describe "Bamboo API", ->
       it "can add and remove simple calculation", ->
         loaded = false
         calculation_name = "above_3rd_grade"
-        waits wait_time
 
         runs ->
           dataset.add_calculation calculation_name, "grade > 3", () ->
@@ -202,9 +201,10 @@ describe "Bamboo API", ->
           expect(found_calculation).toBeDefined()
           return
 
-        # wait for calculation to be ready, does it need to be ready before we delete
+        # wait for calculation to be ready, it needs to be ready before we delete
         waits wait_time
 
+        # todo: poll the caluculations state before deleteing
         runs ->
           dataset.remove_calculation(calculation_name)
           found_calculation = _.find dataset.calculations, (calculation) ->
@@ -216,8 +216,6 @@ describe "Bamboo API", ->
 
       it "can query calculations", ->
         loaded = false
-
-        waits wait_time
 
         runs ->
           expect(dataset.calculations).not.toBeDefined()
@@ -242,8 +240,6 @@ describe "Bamboo API", ->
       beforeEach ->
         loaded = false
         response = undefined
-
-        waits wait_time
 
         runs ->
           expect(dataset.aggregations).not.toBeDefined()
