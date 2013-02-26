@@ -4,13 +4,16 @@ test_data =
   csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv?dl=1"
 
 # time to wait for bamboo to do its magic in ms
-BAMBOO_WAIT_TIME = 5000
+BAMBOO_WAIT_TIME = 8000
 
 # wait time used to
 wait_time = BAMBOO_WAIT_TIME
 
-# max number of ready state retries allowed
-MAX_READY_RETRIES = 3
+# max number of ready state retries allowed. If you increase this also
+# consider increasing the BAMBOO_WAIT_TIME since the ready callback
+# waits for BAMBOO_WAIT_TIME/MAX_READY_RETRIES before retrying. Thus
+# increasing just this will result in shorter waits
+MAX_READY_RETRIES = 4
 
 # the current retry count - always reset to 0 before starting a data_ready_callback sequence
 retry_count = 0
@@ -34,10 +37,16 @@ data_ready_callback = (response)->
     setTimeout =>
       @query_info data_ready_callback
     , Math.round(wait_time/MAX_READY_RETRIES)# distrubute calls by retries and wait time
+  else
+    # reset retry count
+    retry_count = 0
   return
 
-most_recent_ajax_call_arg_keys = (arg_index=0, param)->
-  return _.keys($.ajax.mostRecentCall.args[arg_index][param])
+most_recent_ajax_call_arg = (arg_index, param)->
+  return $.ajax.mostRecentCall.args[arg_index][param]
+
+most_recent_ajax_call_arg_keys = (arg_index, param)->
+  return _.keys(most_recent_ajax_call_arg(arg_index, param))
 
 describe "Bamboo API", ->
   beforeEach ->
@@ -103,6 +112,7 @@ describe "Bamboo API", ->
       })
 
       runs ->
+        loaded = false
         dataset.load_from_url(false, ->
           loaded = true
         )
@@ -316,16 +326,14 @@ describe "Bamboo API", ->
         , "load_from_url to return", 2000
 
         runs ->
-          expect(dataset_for_merge.id).toBeDefined()
-
-        runs ->
           retry_count = 0
+          expect(dataset_for_merge.id).toBeDefined()
           data_ready_callback.call(dataset_for_merge, {state: "pending"})
           return
 
         waitsFor ->
           return dataset_for_merge.info and dataset_for_merge.info.state is "ready"
-        , "dataset to be ready", wait_time
+        , "dataset to be ready", BAMBOO_WAIT_TIME
 
         runs ->
           dataset.merge [dataset.id, dataset_for_merge.id], (result)->
@@ -335,16 +343,59 @@ describe "Bamboo API", ->
 
         waitsFor ->
           return merged_dataset isnt undefined
-        , "datasets to be merged", 3000
+        , "merge to return", 2000
 
         runs ->
           expect(merged_dataset.id).toBeDefined()
-          return
-
-        # delete the second and merged datasets
-        runs ->
           expect(dataset_for_merge.delete()).toBeTruthy()
           expect(merged_dataset.delete()).toBeTruthy()
+          return
+
+        return
+
+      it "can join two datasets on a certain column", ->
+        loaded = false
+        joined_dataset = undefined
+        # create the second dataset
+        dataset_for_join = new bamboo.Dataset()
+        runs ->
+          dataset_for_join.load_from_url test_data.csv_file_join, ->
+            loaded = true
+            return
+
+        waitsFor ->
+          return loaded
+        , "load_from_url to return", 2000
+
+        # poll the dataset's ready state
+        runs ->
+          # todo: remove the need to re-init this by reseting it after successful poll
+          retry_count = 0
+          data_ready_callback.call(dataset_for_join, {state: "pending"})
+          return
+
+        # wait for dataset to be ready
+        waitsFor ->
+          return dataset_for_join.info and dataset_for_join.info.state is "ready"
+        , "dataset to be ready", BAMBOO_WAIT_TIME
+
+        runs ->
+          dataset.join dataset.id, dataset_for_join.id, "name", (result)->
+            joined_dataset = result
+          params = most_recent_ajax_call_arg(0, "data")
+          expect(params.dataset_id).toEqual(dataset.id)
+          expect(params.other_dataset_id).toEqual(dataset_for_join.id)
+          expect(params.on).toEqual("name")
+          return
+
+        waitsFor ->
+          return joined_dataset isnt undefined
+        , "join to return", 2000
+
+        runs ->
+          expect(joined_dataset.id).toBeDefined()
+          expect(dataset_for_join.delete()).toBeTruthy()
+          expect(joined_dataset.delete()).toBeTruthy()
           return
 
         return
