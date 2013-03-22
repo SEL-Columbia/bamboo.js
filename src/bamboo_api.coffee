@@ -83,18 +83,21 @@ class Dataset
 
   query_info: (sync_cb=false) ->
     url = "#{@bamboo_url()}/info"
-    @_run_query "info", url, !!sync_cb, (response)->
+    @_run_query "info", url, !!sync_cb, (response, status, _req)->
       @info = response
       sync_cb.apply @, [response, status, _req] if !!sync_cb
       
-  summary: (summary_select="all", sync_cb=false)->
-    url = "#{@bamboo_url()}/summary?select=#{summary_select}"
+  summary: (summary_select="all", group=null, sync_cb=false)->
+    summary_select_str = if typeof summary_select is "string" then summary_select else JSON.stringify(summary_select)
+    url = "#{@bamboo_url()}/summary?select=#{summary_select_str}"
+    url = url + "&group=" + group if group
     async = !!sync_cb
-    summary_tmp_id = "summary_#{summary_select}"
+    summary_tmp_id = "summary_#{summary_select_str}"
     @_summaries = {} unless @_summaries?
-    @_run_query summary_tmp_id, url, async, (r)->
+    @_run_query summary_tmp_id, url, async, (r, status, _req)->
       @summary_result = r if summary_select is "all"
       @_summaries[summary_tmp_id] = r
+      sync_cb.apply @, [r, status, _req] if sync_cb
     if async then @ else @_summaries[summary_tmp_id]
 
   select: (obj, sync_cb=false) ->
@@ -103,8 +106,9 @@ class Dataset
     url = "#{@bamboo_url()}?select=#{select_str}"
     select_tmp_id = "select_#{select_str}"
     @_selects = {} unless @_selects?
-    @_run_query select_tmp_id, url, async, (r)->
+    @_run_query select_tmp_id, url, async, (r, status, _req)->
       @_selects[select_tmp_id] = r
+      sync_cb.apply @, [r, status, _req] if sync_cb
     if async then @ else @_selects[select_tmp_id]
 
   query: (obj, sync_cb=false) ->
@@ -113,8 +117,9 @@ class Dataset
     url = "#{@bamboo_url()}?query=#{query_str}"
     query_tmp_id = "query_#{query_str}"
     @_queries = {} unless @_queries?
-    @_run_query query_tmp_id, url, async, (r)->
+    @_run_query query_tmp_id, url, async, (r, status, _req)->
       @_queries[query_tmp_id] = r
+      sync_cb.apply @, [r, status, _req] if sync_cb
     if async then @ else @_queries[query_tmp_id]
 
   query_dataset: (sync_cb=false) ->
@@ -132,7 +137,8 @@ class Dataset
     data =
       name: name
       formula: formula
-    success_cb = (response)-> log response.success if dbg()
+    success_cb = (response) ->
+      log response.success if dbg()
     opts =
       type: 'POST'
       data: data
