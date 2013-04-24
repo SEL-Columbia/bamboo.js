@@ -1,7 +1,7 @@
 test_data =
-  csv_file : "https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1"
-  csv_file_merge: "https://www.dropbox.com/s/5aja0nlcufn65vd/sample_merge.csv?dl=1"
-  csv_file_join: "https://www.dropbox.com/s/haamu5h09b85thp/sample_join.csv?dl=1"
+  csv_file : "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_dataset_school_survey.csv"
+  csv_file_merge: "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_merge.csv"
+  csv_file_join: "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_join.csv"
 
 # time to wait for bamboo to do its magic in ms
 BAMBOO_WAIT_TIME = 8000
@@ -32,7 +32,7 @@ callAjax = (xhrSettings) ->
 
 # poll dataset's ready state MAX_READY_RETRIES times
 data_ready_callback = (response)->
-  if response.state isnt "ready" and retry_count++ < MAX_READY_RETRIES
+  if response.state is "pending" and retry_count++ < MAX_READY_RETRIES
     # query info again, wait
     setTimeout =>
       @query_info data_ready_callback
@@ -73,7 +73,6 @@ describe "Bamboo API", ->
         autoload: true
       })
       expect(dataset.id).toBeDefined()
-      expect(dataset.query_info().info.id).toBe(dataset.id)
       return
 
     it "can delete by dataset id", ->
@@ -130,7 +129,7 @@ describe "Bamboo API", ->
         return
 
       waitsFor ->
-        return dataset.info and dataset.info.state is "ready"
+        return dataset.info isnt undefined and dataset.info.state isnt "pending"
       , "dataset to be ready", BAMBOO_WAIT_TIME
 
       return
