@@ -31,11 +31,23 @@ callAjax = (xhrSettings) ->
   return
 
 # poll dataset's ready state MAX_READY_RETRIES times
-data_ready_callback = (response)->
+data_ready_callback  = (response)->
   if response.state is "pending" and retry_count++ < MAX_READY_RETRIES
     # query info again, wait
     setTimeout =>
       @query_info data_ready_callback
+    , Math.round(wait_time/MAX_READY_RETRIES)# distrubute calls by retries and wait time
+  else
+    # reset retry count
+    retry_count = 0
+  return
+
+# poll dataset's aggregation state MAX_READY_RETRIES times
+aggregations_ready_callback = (response)->
+  if JSON.stringify(response) is "{}" and retry_count++ < MAX_READY_RETRIES
+    # query aggregations
+    setTimeout =>
+      @query_aggregations data_ready_callback
     , Math.round(wait_time/MAX_READY_RETRIES)# distrubute calls by retries and wait time
   else
     # reset retry count
@@ -259,29 +271,41 @@ describe "Bamboo API", ->
         return
 
       afterEach ->
+        loaded = false
         response = undefined
+
         runs ->
           dataset.remove_aggregations "total_income", (r)->
             response = r
-            return
-          expect(response.success).toContain("deleted calculation: 'total_income'")
-          return
-        return
-
-      it "can query aggregations", ->
-        loaded = false
-        runs ->
-          dataset.query_aggregations ->
             loaded = true
             return
           return
 
         waitsFor ->
           return loaded
-        , "query_aggregations to return", 1000
+        , "delete aggregation to return", 1000
 
         runs ->
-          expect(dataset.aggregations).toBeDefined()
+          expect(response.success).toContain("deleted calculation: 'total_income'")
+          return
+        return
+
+      it "can query aggregations", ->
+        # todo: since we have to wait a couple of seconds for the aggregation to be ready, should the same kind of
+        # polling be added to the API to avoid failures when the aggregation isnt ready yet but the client has
+        # requested it and got nothing, or perhaps the client just needs to poll manually till ge gets something - 2nd
+        # is much cleaner me thinks
+        runs ->
+          retry_count = 0
+          aggregations_ready_callback.call(dataset, {})
+          return
+
+        waitsFor ->
+          return dataset.aggregations isnt undefined and JSON.stringify(dataset.aggregations) isnt "{}"
+        , "aggregations to be ready", BAMBOO_WAIT_TIME
+
+        runs ->
+          expect(dataset.aggregations).not.toEqual({})
           return
 
         return
@@ -298,7 +322,7 @@ describe "Bamboo API", ->
           sex: "M"
 
         runs ->
-          dataset.update [update_data], (r)->
+          dataset.update [update_data], (r) ->
             response = r
             return
           return
