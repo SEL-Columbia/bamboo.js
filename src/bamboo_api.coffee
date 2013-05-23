@@ -130,9 +130,9 @@ class Dataset
     if async then @ else @_queries[query_tmp_id]
 
   query_dataset: (sync_cb=false) ->
-    @_run_query "dataset", bamboo_url("datasets", @id), !!sync_cb, (r)->
+    @_run_query "dataset", bamboo_url("datasets", @id), !!sync_cb, (r, status, _req)->
       @data = r
-      sync_cb.apply @, [response, status, _req] if !!sync_cb
+      sync_cb.apply @, arguments if !!sync_cb
 
   add_calculation: (name, formula, sync_cb=false) ->
     if is_aggregation formula
