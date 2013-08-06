@@ -304,6 +304,78 @@
                 }
             ]
         },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1?query={\"grade\":4}&select={\"grade\":1}":
+        {
+            "GET":
+            [
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                },
+                {
+                    "grade": 4
+                }
+            ]
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1?query={\"grade\":4}&select={\"grade\":1}&limit=3":
+        {
+            "GET":
+                    [
+                        {
+                            "grade": 4
+                        },
+                        {
+                            "grade": 4
+                        },
+                        {
+                            "grade": 4
+                        }
+                    ]
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1?limit=3":
+        {
+            "GET":
+            [
+                {
+                    "name": "Student8",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student9",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                },
+                {
+                    "name": "Student7",
+                    "grade": 4,
+                    "sex": "F",
+                    "above_3rd_grade": true,
+                    "income": 50,
+                    "percentage": 42.857142857142854
+                }
+            ]
+        },
         "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/summary?select=all":
         {
             "GET":

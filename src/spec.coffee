@@ -1,7 +1,7 @@
 test_data =
-  csv_file : "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_dataset_school_survey.csv"
-  csv_file_merge: "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_merge.csv"
-  csv_file_join: "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_join.csv"
+  csv_file_url : "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_dataset_school_survey.csv"
+  csv_file_merge_url: "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_merge.csv"
+  csv_file_join_url: "https://raw.github.com/modilabs/bamboo.js/master/public/csv/sample_join.csv"
 
 # time to wait for bamboo to do its magic in ms
 BAMBOO_WAIT_TIME = 8000
@@ -21,21 +21,40 @@ retry_count = 0
 callAjax = (xhrSettings) ->
   # call the success function using the expected response as defined in the test_data.urls object
   method = if xhrSettings.type then xhrSettings.type else "GET"
+  params = undefined
+  if method is "GET"
+    params = []
+    _.each xhrSettings.data, (val, key)->
+      params.push(key + "=" + val)
+      return
+    params = params.join("&")
+  xhrSettings.url += "?" + params if params
+  promise =
+    then: (successCallback, errorCallBack)->
+      if @response
+        successCallback.call(null, @response)
+      else if @error
+        errorCallBack.call(@error)
+      return
   try
     response = mock_data.urls[xhrSettings.url][method]
     if response == undefined
       throw new TypeError("urls.#{xhrSettings.url}.#{method} is not defined.")
-    xhrSettings.success.call(null, response)
+    promise.response = response
   catch err
-    xhrSettings.error.call()
-  return
+    promise.error = err
+  return promise
 
 # poll dataset's ready state MAX_READY_RETRIES times
-data_ready_callback  = (response)->
-  if response.state is "pending" and retry_count++ < MAX_READY_RETRIES
+data_ready_callback  = ()->
+  if @state is "pending" and retry_count++ < MAX_READY_RETRIES
     # query info again, wait
     setTimeout =>
-      @query_info data_ready_callback
+      promise = bamboo.query_info(@id)
+      promise.then (data)=>
+        @state = data.state
+        data_ready_callback.call(@)
+        return
     , Math.round(wait_time/MAX_READY_RETRIES)# distrubute calls by retries and wait time
   else
     # reset retry count
@@ -60,7 +79,7 @@ most_recent_ajax_call_arg = (arg_index, param)->
 most_recent_ajax_call_arg_keys = (arg_index, param)->
   return _.keys(most_recent_ajax_call_arg(arg_index, param))
 
-describe "Bamboo API", ->
+describe "Bamboo JS", ->
   beforeEach ->
     if bamboo.settings.URL.match(/^http/)
       spyOn($, 'ajax').andCallThrough()
@@ -78,352 +97,456 @@ describe "Bamboo API", ->
     expect(false_st_2).not.toBeTruthy()
     return
 
-  describe "Datasets", ->
-    it "can create from url", ->
-      dataset = new bamboo.Dataset({
-        url: test_data.csv_file,
-        autoload: true
-      })
-      expect(dataset.id).toBeDefined()
+  describe "URLs", ->
+    it "generates a /<section> url when section is the only param", ->
+      expect(bamboo.bamboo_url('datasets')).toEqual(bamboo.settings.URL + "/datasets")
       return
-
-    it "can delete by dataset id", ->
-      dataset = new bamboo.Dataset({
-        url: test_data.csv_file,
-        autoload: true
-      })
-      expect(dataset.id).toBeDefined()
-      deleted = dataset.delete()
-      expect(deleted).toBeTruthy()
-      return
-
-    it "can check if dataset exists", ->
-      dataset = new bamboo.Dataset({
-        url: test_data.csv_file,
-        autoload: true
-      })
-      expect(dataset.id).toBeDefined()
-      exists = bamboo.dataset_exists(dataset.id)
-      expect(exists).toBeTruthy()
-
-      exists = bamboo.dataset_exists("some-none-existsent-id")
-      expect(exists).toBeFalsy()
-      return
-
     return
 
-  describe "Data APIs", ->
-    loaded = false
-    dataset = undefined
+  describe "_run_query", ->
+    it "runs asynchronously by default", ->
+      #todo: revise to use a simpler call, perhaps a /info
+      promise = bamboo.create_dataset(test_data.csv_file_url)
+      async_arg = most_recent_ajax_call_arg(0, 'async')
+      expect(async_arg).toBeTruthy()
+      return
 
-    beforeEach ->
-      dataset = new bamboo.Dataset({
-        url: test_data.csv_file,
-        autoload: false
-      })
+    it "run synchronously if requested", ->
+      #todo: revise to use a simpler call, perhaps a /info
+      promise = bamboo.create_dataset(test_data.csv_file_url, false)
+      async_arg = most_recent_ajax_call_arg(0, 'async')
+      expect(async_arg).toBeFalsy()
+      return
+    return
 
+  describe "Create", ->
+    it "can create dataset from a URL, query for its info and delete it", ->
+      dataset_id = undefined
+      dataset_info = undefined
       runs ->
-        loaded = false
-        dataset.load_from_url(false, ->
-          loaded = true
-        )
+        promise = bamboo.create_dataset(test_data.csv_file_url)
+        promise.then (data)->
+          dataset_id = data.id
         return
 
       waitsFor ()->
-        return loaded
-      , "dataset to load", 2000
+        return !!dataset_id
+      , "dataset to be created", 2000
+
+      runs ->
+        promise = bamboo.query_info(dataset_id)
+        promise.then (response)->
+          dataset_info = response
+        return
+
+      waitsFor ()->
+        return !!dataset_info
+      , "the dataset's info", 2000
+
+      runs ->
+        expect(dataset_info.state).toBeDefined()
+        expect(dataset_id).toBeDefined()
+        promise = bamboo.delete_dataset(dataset_id)
+        promise.then ()->
+          dataset_id = undefined
+        return
+
+      waitsFor ()->
+        return !dataset_id
+      , "dataset to be deleted", 2000
+
+      return
+    return
+
+  describe "Manage", ->
+    dataset_id = undefined
+    dataset_info = undefined
+
+    beforeEach ->
+      runs ->
+        promise = bamboo.create_dataset(test_data.csv_file_url)
+        promise.then (data)->
+          dataset_id = data.id
+        return
+
+      waitsFor ()->
+        return !!dataset_id
+      , "dataset to be created", 2000
 
       # poll the dataset's ready state
       runs ->
         retry_count = 0
-        expect(dataset.id).toBeDefined()
-        data_ready_callback.call(dataset, {state: "pending"})
+        expect(dataset_id).toBeDefined()
+        dataset_info = {id: dataset_id, state: "pending"}
+        data_ready_callback.call(dataset_info)
         return
 
       waitsFor ->
-        return dataset.info isnt undefined and dataset.info.state isnt "pending"
+        return dataset_info isnt undefined and dataset_info.state isnt "pending"
       , "dataset to be ready", BAMBOO_WAIT_TIME
 
       return
 
     afterEach ->
-      # delete dataset
-      deleted = dataset.delete()
-      expect(deleted).toBeTruthy()
-      return
-
-    describe "Query API", ->
-      it "can query info", ->
-        expect(dataset.query_info().info.id).toBe(dataset.id)
-        expect(dataset.info.num_rows).toBe(14)
+      runs ->
+        expect(dataset_id).toBeDefined()
+        promise = bamboo.delete_dataset(dataset_id)
+        promise.then (response)->
+          dataset_id = undefined
         return
 
-      it "can query data", ->
-        expect(dataset.data).not.toBeDefined()
-        dataset.query_dataset()
-        expect(dataset.data).toBeDefined()
-        return
+      waitsFor ()->
+        return !dataset_id
+      , "dataset to be deleted", 2000
 
-      it "can select from dataset", ->
-        select = dataset.select({grade:1})
-        expect(select.length).toBe(14)
-        return
-
-      it "can run a filter query", ->
-        query1 = dataset.query({grade:4})
-        expect(query1.length).toBe(7)
-        return
-
-      it "can get the summary", ->
-        summary = dataset.summary()
-        expect(dataset.summary_result).toBeDefined()
-
-        # summary with a select
-        select = {"grade": 1}
-        summary = dataset.summary(select)
-        expect(dataset._summaries["summary_#{JSON.stringify(select)}"]).toBeDefined()
-
-        #summary with a select and group
-        group = "sex"
-        summary = dataset.summary(select, group)
-        expect(dataset._summaries["summary_#{JSON.stringify(select)}_#{group}"]).toBeDefined()
-        return
+      runs ->
+        expect(dataset_id).toBeUndefined();
 
       return
 
-    describe "Calculations API", ->
-      it "can add and remove simple calculation", ->
-        loaded = false
-        calculation_name = "above_3rd_grade"
-
+    describe "Query", ->
+      it "can query for all the data", ->
+        data = undefined
         runs ->
-          dataset.add_calculation calculation_name, "grade > 3", () ->
-            loaded = true
-          return
-
-        waitsFor ->
-          return loaded
-        , "calculation to be ready", 1000
-
-        runs ->
-          expect(dataset.calculations).toBeDefined()
-          found_calculation = _.find dataset.calculations, (calculation) ->
-            return calculation.name is calculation_name
-          expect(found_calculation).toBeDefined()
-          return
-
-        # wait for calculation to be ready, it needs to be ready before we delete
-        waits wait_time
-
-        # todo: poll the caluculations state before deleteing
-        runs ->
-          dataset.remove_calculation(calculation_name)
-          found_calculation = _.find dataset.calculations, (calculation) ->
-            return calculation.name is calculation_name
-          expect(found_calculation).not.toBeDefined()
-          return
-
-        return
-
-      it "can query calculations", ->
-        loaded = false
-
-        runs ->
-          expect(dataset.calculations).not.toBeDefined()
-          dataset.query_calculations ->
-            loaded = true
+          promise = bamboo.query(dataset_id)
+          promise.then (response)->
+            data = response
             return
           return
 
         waitsFor ->
-          return loaded
-        , "calculation's query to return", 1000
+          return !!data
 
         runs ->
-          expect(dataset.calculations).toBeDefined()
+          expect(data.length).toEqual(14)
           return
 
         return
 
-      return
-
-    describe "Aggreations API", ->
-      beforeEach ->
-        loaded = false
-        response = undefined
-
+      it "can query with a filter", ->
+        data = undefined
         runs ->
-          expect(dataset.aggregations).not.toBeDefined()
-          dataset.add_aggregations "total_income", "sum(income)", null, (r)->
-            response = r
-            loaded = true
+          promise = bamboo.query(dataset_id, {grade: 4})
+          promise.then (response)->
+            data = response
             return
           return
 
         waitsFor ->
-          return loaded
-        , "add_aggregations to return", 1000
+          return !!data
 
         runs ->
-          expect(response.success).toContain("created calculation")
+          expect(data.length).toEqual(7)
           return
 
         return
 
-      afterEach ->
-        loaded = false
-        response = undefined
-
+      it "can select specific fields", ->
+        data = undefined
         runs ->
-          dataset.remove_aggregations "total_income", (r)->
-            response = r
-            loaded = true
+          promise = bamboo.query(dataset_id, null, {grade: 1})
+          promise.then (response)->
+            data = response
             return
           return
 
         waitsFor ->
-          return loaded
-        , "delete aggregation to return", 1000
+          return !!data
 
         runs ->
-          expect(response.success).toContain("deleted calculation: 'total_income'")
+          expect(data.length).toEqual(14)
+          expect(data[0].grade).toBeDefined()
+          expect(data[0].sex).toBeUndefined()
           return
+
         return
 
-      it "can query aggregations", ->
-        # todo: since we have to wait a couple of seconds for the aggregation to be ready, should the same kind of
-        # polling be added to the API to avoid failures when the aggregation isnt ready yet but the client has
-        # requested it and got nothing, or perhaps the client just needs to poll manually till ge gets something - 2nd
-        # is much cleaner me thinks
+      it "can apply a limit", ->
+        data = undefined
         runs ->
-          retry_count = 0
-          aggregations_ready_callback.call(dataset, {})
+          promise = bamboo.query(dataset_id, null, null, 3)
+          promise.then (response)->
+            data = response
+            return
           return
 
         waitsFor ->
-          return dataset.aggregations isnt undefined and JSON.stringify(dataset.aggregations) isnt "{}"
-        , "aggregations to be ready", BAMBOO_WAIT_TIME
+          return !!data
 
         runs ->
-          expect(dataset.aggregations).not.toEqual({})
+          expect(data.length).toEqual(3)
+          expect(data[0].grade).toBeDefined()
+          expect(data[0].sex).toBeDefined()
+          return
+
+        return
+
+      it "can select specific fields and apply a filter", ->
+        data = undefined
+        runs ->
+          promise = bamboo.query(dataset_id, {grade: 4}, {grade: 1})
+          promise.then (response)->
+            data = response
+            return
+          return
+
+        waitsFor ->
+          return !!data
+
+        runs ->
+          expect(data.length).toEqual(7)
+          expect(data[0].grade).toBeDefined()
+          expect(data[0].sex).toBeUndefined()
+          return
+
+        return
+
+      it "can select specific fields, apply a filter and apply a limit", ->
+        data = undefined
+        runs ->
+          promise = bamboo.query(dataset_id, {grade: 4}, {grade: 1}, 3)
+          promise.then (response)->
+            data = response
+            return
+          return
+
+        waitsFor ->
+          return !!data
+
+        runs ->
+          expect(data.length).toEqual(3)
+          expect(data[0].grade).toBeDefined()
+          expect(data[0].sex).toBeUndefined()
           return
 
         return
 
       return
 
-    describe "Updates, joins and merges", ->
-      it "can update data in an dataset", ->
-        response = undefined
-        update_data =
-          name: "new_student"
-          grade: 1
-          income: 30
-          sex: "M"
-
+    describe "Summary", ->
+      it "can query the datasets summary for all fields", ->
+        summary = undefined
         runs ->
-          dataset.update [update_data], (r) ->
-            response = r
+          promise = bamboo.summary(dataset_id)
+          promise.then (response)->
+            summary = response
             return
           return
 
         waitsFor ->
-          return response isnt undefined
-        , "update call to return", 1000
+          return !!summary
+        , "summary to load"
 
         runs ->
-          #bamboo returns the dataset id after an update
-          expect(response.id).toBeDefined()
+          expect(summary.name).toBeDefined()
+          expect(summary.grade).toBeDefined()
           return
 
         return
 
-      it "can merge datasets", ->
-        loaded = false
-        merged_dataset = undefined
-        # create the second dataset
-        dataset_for_merge = new bamboo.Dataset()
+      it "can query the datasets summary for specified fields", ->
+        summary = undefined
         runs ->
-          dataset_for_merge.load_from_url test_data.csv_file_merge, ->
-            loaded = true
+          promise = bamboo.summary(dataset_id, {grade: 1})
+          promise.then (response)->
+            summary = response
             return
-
-        waitsFor ->
-          return loaded
-        , "load_from_url to return", 2000
-
-        runs ->
-          retry_count = 0
-          expect(dataset_for_merge.id).toBeDefined()
-          data_ready_callback.call(dataset_for_merge, {state: "pending"})
           return
 
         waitsFor ->
-          return dataset_for_merge.info and dataset_for_merge.info.state is "ready"
-        , "dataset to be ready", BAMBOO_WAIT_TIME
+          return !!summary
+        , "summary to load"
 
         runs ->
-          dataset.merge [dataset.id, dataset_for_merge.id], (result)->
-            merged_dataset = result
-          expect(most_recent_ajax_call_arg_keys(0, "data")).toContain("dataset_ids")
-          return
-
-        waitsFor ->
-          return merged_dataset isnt undefined
-        , "merge to return", 2000
-
-        runs ->
-          expect(merged_dataset.id).toBeDefined()
-          expect(dataset_for_merge.delete()).toBeTruthy()
-          expect(merged_dataset.delete()).toBeTruthy()
+          expect(summary.grade).toBeDefined()
+          expect(summary.name).toBeUndefined()
           return
 
         return
 
-      it "can join two datasets on a certain column", ->
-        loaded = false
-        joined_dataset = undefined
-        # create the second dataset
-        dataset_for_join = new bamboo.Dataset()
+      it "can query the datasets summary with a grouping", ->
+        summary = undefined
         runs ->
-          dataset_for_join.load_from_url test_data.csv_file_join, ->
-            loaded = true
+          promise = bamboo.summary(dataset_id, {grade: 1}, "sex")
+          promise.then (response)->
+            summary = response
+            return
+          return
+
+        waitsFor ->
+          return !!summary
+        , "summary to load"
+
+        runs ->
+          expect(summary.sex.M.grade).toBeDefined()
+          expect(summary.sex.F.grade).toBeDefined()
+          return
+
+        return
+
+      return
+
+    describe "Calculations", ->
+      it "can create and remove a calculation", ->
+        message = undefined
+        runs ->
+          promise = bamboo.add_calculation(dataset_id, "above_3rd_grade", "grade > 3")
+          promise.then (response)->
+            message = response
+            return
+          , ()->
+            return
+          return
+
+        waitsFor ->
+          return !!message
+        , "Calculation to be added", 2000
+
+        runs ->
+          expect(message).toBeDefined()
+          message = undefined
+          promise = bamboo.remove_calculation(dataset_id, "above_3rd_grade")
+          promise.then (response)->
+            message = response
+            return
+          , ()->
             return
 
         waitsFor ->
-          return loaded
-        , "load_from_url to return", 2000
+          return !!message
+        , "Calculation to be removed", 2000
 
-        # poll the dataset's ready state
         runs ->
-          # todo: remove the need to re-init this by reseting it after successful poll
-          retry_count = 0
-          data_ready_callback.call(dataset_for_join, {state: "pending"})
+          expect(message.success).toBeDefined()
           return
 
-        # wait for dataset to be ready
-        waitsFor ->
-          return dataset_for_join.info and dataset_for_join.info.state is "ready"
-        , "dataset to be ready", BAMBOO_WAIT_TIME
+        return
 
+      it "can query for calculations", ->
+        calculations = undefined
         runs ->
-          dataset.join dataset.id, dataset_for_join.id, "name", (result)->
-            joined_dataset = result
-          params = most_recent_ajax_call_arg(0, "data")
-          expect(params.dataset_id).toEqual(dataset.id)
-          expect(params.other_dataset_id).toEqual(dataset_for_join.id)
-          expect(params.on).toEqual("name")
+          promise = bamboo.query_calculations(dataset_id)
+          promise.then (response)->
+            calculations = response
+            return
+          , ()->
+            return
           return
 
         waitsFor ->
-          return joined_dataset isnt undefined
-        , "join to return", 2000
+          return !!calculations
+        , "Calculations to be retrieved", 2000
 
         runs ->
-          expect(joined_dataset.id).toBeDefined()
-          expect(dataset_for_join.delete()).toBeTruthy()
-          expect(joined_dataset.delete()).toBeTruthy()
+          expect(calculations).toBeDefined()
           return
+
+        return
+
+      return
+
+    describe "Aggregations", ->
+      it "can add and remove an aggregation without groups", ->
+        message = undefined
+        runs ->
+          promise = bamboo.add_aggregation(dataset_id, "total_income", "sum(income)", null)
+          promise.then (response)->
+            message = response
+            return
+          , ()->
+            return
+          return
+
+        waitsFor ->
+          return !!message
+        , "Aggregation to be added", 2000
+
+        runs ->
+          expect(message).toBeDefined()
+          message = undefined
+          promise = bamboo.remove_aggregation(dataset_id, "total_income")
+          promise.then (response)->
+            message = response
+            return
+          , ()->
+            return
+
+        waitsFor ->
+          return !!message
+        , "Aggregation to be removed", 2000
+
+        runs ->
+          expect(message.success).toBeDefined()
+          return
+
+        return
+
+      it "can add and remove an aggregation with groups", ->
+        message = undefined
+        timedout = false
+        runs ->
+          promise = bamboo.add_aggregation(dataset_id, "total_income", "sum(income)", ['sex'])
+          promise.then (response)->
+            data = most_recent_ajax_call_arg(0, 'data')
+            expect(data).toBeDefined()
+            expect(data.group).toBeDefined()
+            message = response
+            return
+          , ()->
+            return
+          return
+
+        waitsFor ->
+          return !!message
+        , "Aggregation to be added", 2000
+
+        # wait a bit before deleting
+        waitsFor ->
+          setTimeout ()->
+            timedout = true
+            return
+          , 1000
+          return timedout
+        , "timeout", 1000
+
+
+        runs ->
+          expect(message).toBeDefined()
+          message = undefined
+          promise = bamboo.remove_aggregation(dataset_id, "total_income")
+          promise.then (response)->
+            message = response
+            return
+          , ()->
+            return
+
+        waitsFor ->
+          return !!message
+        , "Aggregation to be removed", 2000
+
+        runs ->
+          expect(message.success).toBeDefined()
+          return
+
+        return
+
+      it "can query for aggregations", ->
+        aggregations = undefined
+        runs ->
+          promise = bamboo.query_aggregations(dataset_id)
+          promise.then (response)->
+            aggregations = response
+            return
+          , ()->
+            return
+          return
+
+        waitsFor ->
+          return !!aggregations
+        , "Aggregations to load", 2000
+
+        runs ->
+          expect(aggregations).toBeDefined()
 
         return
 

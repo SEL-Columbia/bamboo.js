@@ -26,6 +26,85 @@ allowed_aggregation = ['max',
   'argmax',
   'newest']
 
+_run_query = (url, async=true, opts={})->
+  ensure_jquery()
+  opts.url = url
+  opts.async = async unless opts.async
+  opts.dataType = 'json' unless opts.dataType
+  opts.crossDomain = true unless opts.crossDomain
+  promise = $.ajax(opts)
+  return promise
+
+_create_dataset = (urlOrFile, async)->
+  opts =
+    data: {url: urlOrFile}
+    type: 'POST'
+    dataType: 'json'
+  return _run_query(bamboo_url('datasets'), async, opts)
+
+
+_delete_dataset = (dataset_id, async)->
+  opts =
+    type: 'DELETE'
+    dataType: 'json'
+  return _run_query(bamboo_url('datasets', dataset_id), async, opts)
+
+_query_info = (dataset_id, async)->
+  opts = {}
+  return _run_query(bamboo_url('datasets', dataset_id, 'info'), async, opts)
+
+_query = (dataset_id, filter, select, limit, async)->
+  opts = {data: {}}
+  opts.data.query = JSON.stringify(filter) if filter
+  opts.data.select = JSON.stringify(select) if select
+  opts.data.limit = limit if limit
+  return _run_query(bamboo_url('datasets', dataset_id), async, opts)
+
+_summary = (dataset_id, select="all", group=null, async)->
+  select = if typeof select is "string" then select else JSON.stringify(select)
+  opts = {data: {}}
+  opts.data.select = select
+  opts.data.group = group if group
+  return _run_query(bamboo_url('datasets', dataset_id, 'summary'), async, opts)
+
+_add_calculation = (dataset_id, name, formula, async)->
+  opts = {data: {}}
+  opts.data.name = name
+  opts.data.formula = formula
+  opts.type = 'POST'
+  return _run_query(bamboo_url('calculations', dataset_id), async, opts)
+
+_remove_calculation = (dataset_id, name, async)->
+  opts = {data: {}}
+  opts.type = 'DELETE'
+  return _run_query(bamboo_url('datasets', dataset_id, 'calculations', name), async, opts)
+
+_query_calculations = (dataset_id, async)->
+  return _run_query(bamboo_url('datasets', dataset_id, 'calculations'), async)
+
+_add_aggregation = (dataset_id, name, formula, groups=null, async)->
+  if is_aggregation(formula)
+    opts = {data: {}}
+    opts.data.name = name
+    opts.data.formula = formula
+    opts.type = 'POST'
+    if groups isnt null
+      if groups instanceof Array
+        opts.data.group = groups.join()
+      else
+        throw new Error "group must be an array"
+    return _run_query(bamboo_url('calculations', dataset_id), async, opts)
+  else
+    throw new Error "ill formated aggregation formula, perhaps you are
+            looking for calculation instead of aggregation?"
+
+_remove_aggregation = (dataset_id, name, async)->
+  opts = {data: {}}
+  opts.type = 'DELETE'
+  return _run_query(bamboo_url('datasets', dataset_id, 'calculations', name), async, opts)
+
+_query_aggregations = (dataset_id, async)->
+  return _run_query(bamboo_url('datasets', dataset_id, 'aggregations'), async)
 
 class Dataset
   constructor: (data) ->
@@ -341,10 +420,21 @@ LS =
   failed:         "failed"
 
 @bamboo =
-  Dataset: Dataset
+  bamboo_url: bamboo_url
   dataset_exists: dataset_exists
   settings: settings
   is_aggregation: is_aggregation
+  create_dataset: _create_dataset
+  delete_dataset: _delete_dataset
+  query_info: _query_info
+  summary: _summary
+  query: _query
+  add_calculation: _add_calculation
+  remove_calculation: _remove_calculation
+  query_calculations: _query_calculations
+  add_aggregation: _add_aggregation
+  remove_aggregation: _remove_aggregation
+  query_aggregations: _query_aggregations
 
 noop = ->
 _uniqueIdCount = 0

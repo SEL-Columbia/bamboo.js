@@ -1,0 +1,22 @@
+{
+    "name": {
+        "label": "Student Name",
+        "olap_type": "dimension",
+        "simpletype": "string"
+    },
+    "grade": {
+        "label": "Grade",
+        "olap_type": "dimension",
+        "simpletype": "integer"
+    },
+    "income": {
+        "label": "Income",
+        "olap_type": "measure",
+        "simpletype": "float"
+    },
+    "sex": {
+        "label": "Gender",
+        "olap_type": "dimension",
+        "simpletype": "string"
+    }
+}
