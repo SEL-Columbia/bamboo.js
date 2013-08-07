@@ -581,6 +581,25 @@ describe "Bamboo JS", ->
 
         return
 
+      it "can reset a dataset", ->
+        reset_dataset_id = undefined
+        runs ->
+          promise = bamboo.reset(dataset_id, test_data.csv_file_merge_url)
+          promise.then (response)->
+            reset_dataset_id = response.id
+            return
+          return
+
+        waitsFor ->
+          return !!reset_dataset_id
+        , "Reset call to complete", REQUEST_TIME
+
+        runs ->
+          expect(reset_dataset_id).toEqual(dataset_id)
+          return
+
+        return
+
       return
 
     describe "Joins and Merges", ->
@@ -691,6 +710,68 @@ describe "Bamboo JS", ->
 
         runs ->
           bamboo.delete_dataset(merged_dataset_id)
+          return
+
+        return
+
+      return
+
+    describe "Row", ->
+
+      it "can query for a row", ->
+        row = undefined
+        runs ->
+          bamboo.get_row(dataset_id, 0).then (response)->
+            row = response
+            return
+          return
+
+        waitsFor ->
+          return !!row
+        , "get row ro return", REQUEST_TIME
+
+        runs ->
+          expect(row.name).toBeDefined()
+          return
+
+        return
+
+      it "can delete a row", ->
+        data = undefined
+        runs ->
+          bamboo.delete_row(dataset_id, 0).then (response)->
+            data = response
+            return
+          return
+
+        waitsFor ->
+          return !!data
+        , "delete row to return", REQUEST_TIME
+
+        runs ->
+          expect(data.id).toBeDefined()
+          expect(data.success).toBeDefined()
+          return
+
+        return
+
+      it "can update a row", ->
+        data = undefined
+        update_data =
+          grade: 7
+        runs ->
+          bamboo.update_row(dataset_id, 0, update_data).then (response)->
+            data = response
+            return
+          return
+
+        waitsFor ->
+          return !!data
+        , "update row to return", REQUEST_TIME
+
+        runs ->
+          expect(data.id).toBeDefined()
+          expect(data.success).toBeDefined()
           return
 
         return

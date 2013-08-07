@@ -601,6 +601,34 @@
             {
                 "success": "deleted dataset: 91b6816b3b0743cea070232fda46bc4b"
             }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/reset":
+        {
+            "PUT":
+            {
+                "id": "fdf66b3a8a5b4617bd12f56e70e394a1"
+            }
+        },
+        "/datasets/fdf66b3a8a5b4617bd12f56e70e394a1/row/0":
+        {
+            "GET":
+            {
+                "grade": 3,
+                "index": 3,
+                "sex": "F",
+                "name": "Student4",
+                "income": 50
+            },
+            "PUT":
+            {
+                "id": "fdf66b3a8a5b4617bd12f56e70e394a1",
+                "success": "Updated row with index '0'."
+            },
+            "DELETE":
+            {
+                "id": "fdf66b3a8a5b4617bd12f56e70e394a1",
+                "success": "Deleted row with index '0'."
+            }
         }
     }
 }

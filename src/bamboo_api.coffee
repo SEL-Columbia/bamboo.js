@@ -14,6 +14,9 @@ bamboo_url = (section="datasets", id, operation, name)->
       pieces.push operation
       if name
         pieces.push name
+  extra_args = Array.prototype.slice.call(arguments, 3)
+  extra_args.forEach (arg)->
+    pieces.push(arg)
   pieces.join '/'
 
 allowed_aggregation = ['max',
@@ -152,6 +155,32 @@ _merge = (datasets, async)->
     type: "POST"
     data: data
   return _run_query bamboo_url('datasets','merge'), async, opts
+
+_reset = (dataset_id, urlToData, async)->
+  data =
+    url: urlToData
+  opts =
+    type: "PUT"
+    data: data
+  return _run_query bamboo_url('datasets', dataset_id, 'reset'), async, opts
+
+_get_row = (dataset_id, row_index, async)->
+  opts = {}
+  return _run_query bamboo_url('datasets', dataset_id, 'row', row_index), async, opts
+
+_delete_row = (dataset_id, row_index, async)->
+  opts =
+    type: "DELETE"
+  return _run_query bamboo_url('datasets', dataset_id, 'row', row_index), async, opts
+
+_update_row = (dataset_id, row_index, update_data, async)->
+  string_data = JSON.stringify(update_data) if typeof update_data isnt "string"
+  data =
+    data: string_data
+  opts =
+    type: "PUT",
+    data: data
+  return _run_query bamboo_url('datasets', dataset_id, 'row', row_index), async, opts
 
 class Dataset
   constructor: (data) ->
@@ -485,6 +514,10 @@ LS =
   join: _join
   merge: _merge
   update: _update
+  reset: _reset
+  get_row: _get_row
+  delete_row: _delete_row
+  update_row: _update_row
 
 noop = ->
 _uniqueIdCount = 0
