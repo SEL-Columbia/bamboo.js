@@ -9,6 +9,9 @@ BAMBOO_WAIT_TIME = 8000
 # wait time used to
 wait_time = BAMBOO_WAIT_TIME
 
+# how long to wait for requests to return
+REQUEST_TIME = 3000
+
 # max number of ready state retries allowed. If you increase this also
 # consider increasing the BAMBOO_WAIT_TIME since the ready callback
 # waits for BAMBOO_WAIT_TIME/MAX_READY_RETRIES before retrying. Thus
@@ -131,7 +134,7 @@ describe "Bamboo JS", ->
 
       waitsFor ()->
         return !!dataset_id
-      , "dataset to be created", 2000
+      , "dataset to be created", REQUEST_TIME
 
       runs ->
         promise = bamboo.query_info(dataset_id)
@@ -141,7 +144,7 @@ describe "Bamboo JS", ->
 
       waitsFor ()->
         return !!dataset_info
-      , "the dataset's info", 2000
+      , "the dataset's info", REQUEST_TIME
 
       runs ->
         expect(dataset_info.state).toBeDefined()
@@ -153,14 +156,14 @@ describe "Bamboo JS", ->
 
       waitsFor ()->
         return !dataset_id
-      , "dataset to be deleted", 2000
+      , "dataset to be deleted", REQUEST_TIME
 
       return
     return
 
   describe "Manage", ->
     dataset_id = undefined
-    dataset_info = undefined
+    join_dataset_info = undefined
 
     beforeEach ->
       runs ->
@@ -171,18 +174,18 @@ describe "Bamboo JS", ->
 
       waitsFor ()->
         return !!dataset_id
-      , "dataset to be created", 2000
+      , "dataset to be created", REQUEST_TIME
 
       # poll the dataset's ready state
       runs ->
         retry_count = 0
         expect(dataset_id).toBeDefined()
-        dataset_info = {id: dataset_id, state: "pending"}
-        data_ready_callback.call(dataset_info)
+        join_dataset_info = {id: dataset_id, state: "pending"}
+        data_ready_callback.call(join_dataset_info)
         return
 
       waitsFor ->
-        return dataset_info isnt undefined and dataset_info.state isnt "pending"
+        return join_dataset_info isnt undefined and join_dataset_info.state isnt "pending"
       , "dataset to be ready", BAMBOO_WAIT_TIME
 
       return
@@ -197,7 +200,7 @@ describe "Bamboo JS", ->
 
       waitsFor ()->
         return !dataset_id
-      , "dataset to be deleted", 2000
+      , "dataset to be deleted", REQUEST_TIME
 
       runs ->
         expect(dataset_id).toBeUndefined();
@@ -400,7 +403,7 @@ describe "Bamboo JS", ->
 
         waitsFor ->
           return !!message
-        , "Calculation to be added", 2000
+        , "Calculation to be added", REQUEST_TIME
 
         runs ->
           expect(message).toBeDefined()
@@ -414,7 +417,7 @@ describe "Bamboo JS", ->
 
         waitsFor ->
           return !!message
-        , "Calculation to be removed", 2000
+        , "Calculation to be removed", REQUEST_TIME
 
         runs ->
           expect(message.success).toBeDefined()
@@ -435,7 +438,7 @@ describe "Bamboo JS", ->
 
         waitsFor ->
           return !!calculations
-        , "Calculations to be retrieved", 2000
+        , "Calculations to be retrieved", REQUEST_TIME
 
         runs ->
           expect(calculations).toBeDefined()
@@ -459,7 +462,7 @@ describe "Bamboo JS", ->
 
         waitsFor ->
           return !!message
-        , "Aggregation to be added", 2000
+        , "Aggregation to be added", REQUEST_TIME
 
         runs ->
           expect(message).toBeDefined()
@@ -473,7 +476,7 @@ describe "Bamboo JS", ->
 
         waitsFor ->
           return !!message
-        , "Aggregation to be removed", 2000
+        , "Aggregation to be removed", REQUEST_TIME
 
         runs ->
           expect(message.success).toBeDefined()
@@ -483,7 +486,7 @@ describe "Bamboo JS", ->
 
       it "can add and remove an aggregation with groups", ->
         message = undefined
-        timedout = false
+        wait_time_elapsed = false
         runs ->
           promise = bamboo.add_aggregation(dataset_id, "total_income", "sum(income)", ['sex'])
           promise.then (response)->
@@ -498,15 +501,15 @@ describe "Bamboo JS", ->
 
         waitsFor ->
           return !!message
-        , "Aggregation to be added", 2000
+        , "Aggregation to be added", REQUEST_TIME
 
         # wait a bit before deleting
         waitsFor ->
           setTimeout ()->
-            timedout = true
+            wait_time_elapsed = true
             return
           , 1000
-          return timedout
+          return wait_time_elapsed
         , "timeout", 1000
 
 
@@ -522,7 +525,7 @@ describe "Bamboo JS", ->
 
         waitsFor ->
           return !!message
-        , "Aggregation to be removed", 2000
+        , "Aggregation to be removed", REQUEST_TIME
 
         runs ->
           expect(message.success).toBeDefined()
@@ -543,10 +546,152 @@ describe "Bamboo JS", ->
 
         waitsFor ->
           return !!aggregations
-        , "Aggregations to load", 2000
+        , "Aggregations to load", REQUEST_TIME
 
         runs ->
           expect(aggregations).toBeDefined()
+
+        return
+
+      return
+
+    describe "Updates", ->
+      it "can update data in an dataset", ->
+        data = undefined
+        update_data =
+          name: "new_student"
+          grade: 1
+          income: 30
+          sex: "M"
+
+        runs ->
+          promise = bamboo.update(dataset_id, [update_data])
+          promise.then (response)->
+            data = response
+            return
+          return
+
+        waitsFor ->
+          return !!data
+        , "Update call to return", REQUEST_TIME
+
+        runs ->
+          expect(data).toBeDefined()
+          return
+
+        return
+
+      return
+
+    describe "Joins and Merges", ->
+      dataset_id_to_join = undefined
+      dataset_id_to_merge = undefined
+      beforeEach ->
+        join_dataset_info = undefined
+        merge_dataset_info = undefined
+        runs ->
+          bamboo.create_dataset(test_data.csv_file_join_url).then (response)->
+            dataset_id_to_join = response.id
+            return
+          bamboo.create_dataset(test_data.csv_file_merge_url).then (response)->
+            dataset_id_to_merge = response.id
+            return
+
+          return
+
+        waitsFor ->
+          return  !!dataset_id_to_join && !!dataset_id_to_merge
+        , "Right datasets to be created", 4000
+
+        # wait for both datasets to be ready
+        runs ->
+          retry_count = 0
+          join_dataset_info = {id: dataset_id_to_join, state: "pending"}
+          data_ready_callback.call(join_dataset_info)
+          return
+
+        waitsFor ->
+          return join_dataset_info isnt undefined and join_dataset_info.state isnt "pending"
+        , "right hand side dataset to be ready", BAMBOO_WAIT_TIME
+
+        return
+
+      afterEach ->
+        runs ->
+          bamboo.delete_dataset(dataset_id_to_join).then ()->
+            dataset_id_to_join = undefined
+            return
+          bamboo.delete_dataset(dataset_id_to_merge).then ()->
+            dataset_id_to_merge = undefined
+            return
+          return
+
+        waitsFor ->
+          return !dataset_id_to_join && !dataset_id_to_merge
+        , "Dataset to be deleted", REQUEST_TIME
+
+        return
+
+      it "can join two datasets", ->
+        join_dataset_info = undefined
+        joined_dataset_id = undefined
+        runs ->
+          promise = bamboo.join(dataset_id, dataset_id_to_join, "name")
+          promise.then (response)->
+            joined_dataset_id = response.id
+            return
+          return
+
+        waitsFor ->
+          return !!joined_dataset_id
+        , "Dataset to be joined", REQUEST_TIME
+
+        runs ->
+          expect(joined_dataset_id).toBeDefined()
+          # wait for joined dataset to be ready then delete
+          retry_count = 0
+          join_dataset_info = {id: joined_dataset_id, state: "pending"}
+          data_ready_callback.call(join_dataset_info)
+          return
+
+        waitsFor ->
+          return join_dataset_info isnt undefined and join_dataset_info.state isnt "pending"
+        , "joined dataset to be ready", BAMBOO_WAIT_TIME
+
+        runs ->
+          bamboo.delete_dataset(joined_dataset_id)
+          return
+
+        return
+
+      it "can merge two datasets", ->
+        merged_dataset_id = undefined
+        merged_dataset_info = undefined
+        runs ->
+          promise = bamboo.merge([dataset_id, dataset_id_to_merge])
+          promise.then (response)->
+            merged_dataset_id = response.id
+            return
+          return
+
+        waitsFor ->
+          return !!merged_dataset_id
+
+        runs ->
+          expect(merged_dataset_id).toBeDefined()
+          # wait for joined dataset to be ready then delete
+          retry_count = 0
+          merged_dataset_info = {id: merged_dataset_id, state: "pending"}
+          data_ready_callback.call(merged_dataset_info)
+          return
+
+        waitsFor ->
+          return merged_dataset_info isnt undefined and merged_dataset_info.state isnt "pending"
+        , "merged dataset to be ready", BAMBOO_WAIT_TIME
+
+        runs ->
+          bamboo.delete_dataset(merged_dataset_id)
+          return
 
         return
 

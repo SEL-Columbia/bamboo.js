@@ -571,11 +571,12 @@
                 "id": "5bf79697cab7478ca1c0654ee98d37c7"
             }
         },
-        "/datasets/5bf79697cab7478ca1c0654ee98d37c7":
+        "/datasets/5bf79697cab7478ca1c0654ee98d37c7/info":
         {
-            "DELETE":
+            "GET":
             {
-                "success": "deleted dataset: 5bf79697cab7478ca1c0654ee98d37c7"
+                "id": "5bf79697cab7478ca1c0654ee98d37c7",
+                "status": "ready"
             }
         },
         "/datasets/join":
@@ -584,6 +585,14 @@
             {
                 "id": "91b6816b3b0743cea070232fda46bc4b",
                 "success": "joined dataset fdf66b3a8a5b4617bd12f56e70e394a1 to f74070e950524bf0acaced3b16f4ccbd on name"
+            }
+        },
+        "/datasets/91b6816b3b0743cea070232fda46bc4b/info":
+        {
+            "GET":
+            {
+                "id": "91b6816b3b0743cea070232fda46bc4b",
+                "status": "ready"
             }
         },
         "/datasets/91b6816b3b0743cea070232fda46bc4b":

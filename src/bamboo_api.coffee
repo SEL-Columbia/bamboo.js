@@ -106,6 +106,53 @@ _remove_aggregation = (dataset_id, name, async)->
 _query_aggregations = (dataset_id, async)->
   return _run_query(bamboo_url('datasets', dataset_id, 'aggregations'), async)
 
+_update = (dataset_id, rows, async)->
+  ###
+  Updates this dataset with the rows given in {column: value} format.
+  Any unspecified columns will result in n/a values.
+  ###
+  if not (rows instanceof Array)
+    throw new Error "rows must be an array"
+  if rows.length is 0
+    throw new Error "rows cannot be empty"
+  # massage rows
+  jsonified_rows = JSON.stringify rows
+  data =
+    update: jsonified_rows
+  opts =
+    type: "PUT"
+    data: data
+  return _run_query bamboo_url('datasets', dataset_id), async, opts
+
+_join = (left_dataset_id, right_dataset_id, on_column, async)->
+  ###
+  Create a new dataset that is the result of a join, where this
+  left_dataset is the lefthand side and *right_dataset* is the
+  righthand side and *on* is the column on which to join.
+  The column that is joined on must be unique in the righthand side
+  and must exist in both datasets.
+  ###
+  data =
+    dataset_id: left_dataset_id
+    other_dataset_id: right_dataset_id
+    on: on_column
+  opts =
+    type: "POST"
+    data: data
+  return _run_query bamboo_url("datasets", "join"), async, opts
+
+_merge = (datasets, async)->
+  if not (datasets instanceof Array)
+    throw new Error "datasets for merging must be an array"
+  dataset_ids = JSON.stringify(datasets)
+  data =
+    dataset_ids: dataset_ids
+
+  opts =
+    type: "POST"
+    data: data
+  return _run_query bamboo_url('datasets','merge'), async, opts
+
 class Dataset
   constructor: (data) ->
     @extend(data)
@@ -435,6 +482,9 @@ LS =
   add_aggregation: _add_aggregation
   remove_aggregation: _remove_aggregation
   query_aggregations: _query_aggregations
+  join: _join
+  merge: _merge
+  update: _update
 
 noop = ->
 _uniqueIdCount = 0
