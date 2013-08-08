@@ -6,17 +6,14 @@ dbg = ()-> settings.DEBUG
 jsonify = (args...)-> JSON.stringify.apply @, args
 ensure_jquery = -> throw new Error("jQuery is not available.") unless $?
 
-bamboo_url = (section="datasets", id, operation, name)->
+bamboo_url = (section = "datasets", id, operation, name)->
   pieces = [settings.URL, section]
   if id?
     pieces.push id
-    if operation
+    if operation?
       pieces.push operation
-      if name
+      if name?
         pieces.push name
-  extra_args = Array.prototype.slice.call(arguments, 3)
-  extra_args.forEach (arg)->
-    pieces.push(arg)
   pieces.join '/'
 
 allowed_aggregation = ['max',
@@ -29,7 +26,7 @@ allowed_aggregation = ['max',
   'argmax',
   'newest']
 
-_run_query = (url, async=true, opts={})->
+_run_query = (url, async = true, opts = {})->
   ensure_jquery()
   opts.url = url
   opts.async = async unless opts.async
@@ -40,7 +37,8 @@ _run_query = (url, async=true, opts={})->
 
 _create_dataset = (urlOrFile, async)->
   opts =
-    data: {url: urlOrFile}
+    data:
+      {url: urlOrFile}
     type: 'POST'
     dataType: 'json'
   return _run_query(bamboo_url('datasets'), async, opts)
@@ -57,37 +55,42 @@ _query_info = (dataset_id, async)->
   return _run_query(bamboo_url('datasets', dataset_id, 'info'), async, opts)
 
 _query = (dataset_id, filter, select, limit, async)->
-  opts = {data: {}}
+  opts = {data:
+    {}}
   opts.data.query = JSON.stringify(filter) if filter
   opts.data.select = JSON.stringify(select) if select
   opts.data.limit = limit if limit
   return _run_query(bamboo_url('datasets', dataset_id), async, opts)
 
-_summary = (dataset_id, select="all", group=null, async)->
+_summary = (dataset_id, select = "all", group = null, async)->
   select = if typeof select is "string" then select else JSON.stringify(select)
-  opts = {data: {}}
+  opts = {data:
+    {}}
   opts.data.select = select
   opts.data.group = group if group
   return _run_query(bamboo_url('datasets', dataset_id, 'summary'), async, opts)
 
 _add_calculation = (dataset_id, name, formula, async)->
-  opts = {data: {}}
+  opts = {data:
+    {}}
   opts.data.name = name
   opts.data.formula = formula
   opts.type = 'POST'
   return _run_query(bamboo_url('calculations', dataset_id), async, opts)
 
 _remove_calculation = (dataset_id, name, async)->
-  opts = {data: {}}
+  opts = {data:
+    {}}
   opts.type = 'DELETE'
   return _run_query(bamboo_url('datasets', dataset_id, 'calculations', name), async, opts)
 
 _query_calculations = (dataset_id, async)->
   return _run_query(bamboo_url('datasets', dataset_id, 'calculations'), async)
 
-_add_aggregation = (dataset_id, name, formula, groups=null, async)->
+_add_aggregation = (dataset_id, name, formula, groups = null, async)->
   if is_aggregation(formula)
-    opts = {data: {}}
+    opts = {data:
+      {}}
     opts.data.name = name
     opts.data.formula = formula
     opts.type = 'POST'
@@ -99,10 +102,11 @@ _add_aggregation = (dataset_id, name, formula, groups=null, async)->
     return _run_query(bamboo_url('calculations', dataset_id), async, opts)
   else
     throw new Error "ill formated aggregation formula, perhaps you are
-            looking for calculation instead of aggregation?"
+                looking for calculation instead of aggregation?"
 
 _remove_aggregation = (dataset_id, name, async)->
-  opts = {data: {}}
+  opts = {data:
+    {}}
   opts.type = 'DELETE'
   return _run_query(bamboo_url('datasets', dataset_id, 'calculations', name), async, opts)
 
@@ -154,7 +158,7 @@ _merge = (datasets, async)->
   opts =
     type: "POST"
     data: data
-  return _run_query bamboo_url('datasets','merge'), async, opts
+  return _run_query bamboo_url('datasets', 'merge'), async, opts
 
 _reset = (dataset_id, urlToData, async)->
   data =
@@ -191,13 +195,13 @@ class Dataset
     if @url? and !@id? and @autoload
       @load_from_url()
 
-  extend: (obj, override=false) ->
+  extend: (obj, override = false) ->
     @[key] = val for key, val of obj when override or !@[key]?
 
   load_status: (for_what) ->
     @_ls[for_what] or LS.not_started
 
-  load_from_url: (url=false, sync_cb=false) ->
+  load_from_url: (url = false, sync_cb = false) ->
     ensure_jquery()
     @url = url if url
     if !@url?
@@ -205,7 +209,8 @@ class Dataset
     @_ls.from_url = LS.started
     @_reqs.from_url = $.ajax
       async: !!sync_cb
-      data: {url: @url}
+      data:
+        {url: @url}
       type: 'POST'
       dataType: 'json'
       url: bamboo_url('datasets')
@@ -223,10 +228,10 @@ class Dataset
   bamboo_url: () ->
     if !@id?
       throw new Error("Missing dataset ID. " +
-                        "Run 'dataset.load_from_url()'.")
+      "Run 'dataset.load_from_url()'.")
     bamboo_url("datasets", @id)
 
-  _run_query: (for_what, url, async, cb, opts={}) ->
+  _run_query: (for_what, url, async, cb, opts = {}) ->
     ensure_jquery()
     @_ls[for_what] = LS.started
     opts.async = async unless opts.async?
@@ -242,13 +247,13 @@ class Dataset
     @_reqs[for_what] = $.ajax opts
     @
 
-  query_info: (sync_cb=false) ->
+  query_info: (sync_cb = false) ->
     url = "#{@bamboo_url()}/info"
     @_run_query "info", url, !!sync_cb, (response, status, _req)->
       @info = response
       sync_cb.apply @, [response, status, _req] if !!sync_cb
-      
-  summary: (summary_select="all", group=null, sync_cb=false)->
+
+  summary: (summary_select = "all", group = null, sync_cb = false)->
     summary_select_str = if typeof summary_select is "string" then summary_select else JSON.stringify(summary_select)
     url = "#{@bamboo_url()}/summary?select=#{summary_select_str}"
     url += "&group=#{group}" if group?
@@ -262,7 +267,7 @@ class Dataset
       sync_cb.apply @, [r, status, _req] if sync_cb
     if async then @ else @_summaries[summary_tmp_id]
 
-  select: (obj, sync_cb=false) ->
+  select: (obj, sync_cb = false) ->
     select_str = jsonify(obj)
     async = !!sync_cb
     url = "#{@bamboo_url()}?select=#{select_str}"
@@ -273,7 +278,7 @@ class Dataset
       sync_cb.apply @, [r, status, _req] if sync_cb
     if async then @ else @_selects[select_tmp_id]
 
-  query: (obj, sync_cb=false) ->
+  query: (obj, sync_cb = false) ->
     query_str = jsonify(obj)
     async = !!sync_cb
     url = "#{@bamboo_url()}?query=#{query_str}"
@@ -284,15 +289,15 @@ class Dataset
       sync_cb.apply @, [r, status, _req] if sync_cb
     if async then @ else @_queries[query_tmp_id]
 
-  query_dataset: (sync_cb=false) ->
+  query_dataset: (sync_cb = false) ->
     @_run_query "dataset", bamboo_url("datasets", @id), !!sync_cb, (r, status, _req)->
       @data = r
       sync_cb.apply @, arguments if !!sync_cb
 
-  add_calculation: (name, formula, sync_cb=false) ->
+  add_calculation: (name, formula, sync_cb = false) ->
     if is_aggregation formula
       throw new Error "Error: this formula indicates it's aggregation
-        instead of calculation, please use Dataset.add_aggregation instead"
+              instead of calculation, please use Dataset.add_aggregation instead"
 
     calc_id   = _uniqueId("calculation")
     url       = bamboo_url("calculations", @id)
@@ -302,8 +307,8 @@ class Dataset
     @calculations = [] unless @calculations?
     success_cb = (response) ->
       calculation = {
-        name: name,
-        formula: formula
+      name: name,
+      formula: formula
       }
       @calculations.push(calculation)
       sync_cb.apply @, arguments if sync_cb
@@ -313,21 +318,21 @@ class Dataset
       data: data
     @_run_query "calculation_#{calc_id}", url, false, success_cb, opts
 
-  query_calculations: (sync_cb=false) ->
+  query_calculations: (sync_cb = false) ->
     @_run_query "calculations", bamboo_url("datasets", @id, "calculations"), false, (r)->
       @calculations = r
       sync_cb.apply @, arguments if !!sync_cb
 
-#  remove_calculation: (name) ->
-#    url = bamboo_url("calculations", @id)
-#    data =
-#      name: name
-#    success_cb = (response)-> log response.success if dbg()
-#    opts =
-#      type: 'DELETE'
-#      data: data
-#    @_run_query "delete calculation under name #{name} in dataset #{@id}",
-#      url, false, success_cb, opts
+  #  remove_calculation: (name) ->
+  #    url = bamboo_url("calculations", @id)
+  #    data =
+  #      name: name
+  #    success_cb = (response)-> log response.success if dbg()
+  #    opts =
+  #      type: 'DELETE'
+  #      data: data
+  #    @_run_query "delete calculation under name #{name} in dataset #{@id}",
+  #      url, false, success_cb, opts
 
   remove_calculation: (name) ->
     url = bamboo_url("datasets", @id, "calculations", name)
@@ -340,9 +345,9 @@ class Dataset
     opts =
       type: 'DELETE'
     @_run_query "delete calculation under name #{name} in dataset #{@id}",
-      url, false, success_cb, opts
+    url, false, success_cb, opts
 
-  add_aggregations:(name, formula, groups=null, sync_cb=false)->
+  add_aggregations: (name, formula, groups = null, sync_cb = false)->
     if is_aggregation(formula)
       agg_id = _uniqueId "aggregation"
       url = bamboo_url("calculations", @id)
@@ -365,14 +370,14 @@ class Dataset
 
     else
       throw new Error "ill formated aggregation formula, perhaps you are
-        looking for calculation instead of aggregation?"
+              looking for calculation instead of aggregation?"
 
-  query_aggregations: (sync_cb=false) ->
+  query_aggregations: (sync_cb = false) ->
     @_run_query "aggregations", bamboo_url("datasets", @id, "aggregations"), !!sync_cb, (r)->
       @aggregations = r
       sync_cb.apply @, arguments if !!sync_cb
 
-  remove_aggregations: (name, sync_cb=false) ->
+  remove_aggregations: (name, sync_cb = false) ->
     url = bamboo_url("datasets", @id, "calculations", name)
     success_cb = (response) ->
       sync_cb.apply(@, arguments) if !!sync_cb
@@ -390,34 +395,34 @@ class Dataset
     The column that is joined on must be unique in the righthand side
     and must exist in both datasets.
     ###
-    url = bamboo_url("datasets","join")
+    url = bamboo_url("datasets", "join")
     data =
       dataset_id: left
       other_dataset_id: right
       on: on_column
     success_cb = (response)->
-      joined = new bamboo.Dataset(id:response.id)
+      joined = new bamboo.Dataset(id: response.id)
       cb.call null, joined
       log response.success if dbg()
     opts =
       type: "POST"
       data: data
     @_run_query "joined datasets #{left} and #{right}", url, false, success_cb, opts
-      
 
-  merge:(datasets,cb)->
+
+  merge: (datasets, cb)->
     ###
     Create a new dataset that is a row-wise merge of those in *datasets*.
     Returns the new merged dataset.
     ###
     if not (datasets instanceof Array)
       throw new Error "datasets for merging must be an array"
-    url = bamboo_url('datasets','merge')
+    url = bamboo_url('datasets', 'merge')
     dataset_ids = JSON.stringify(datasets)
     data =
       dataset_ids: dataset_ids
     success_cb = (response)->
-      merged = new bamboo.Dataset(id:response.id)
+      merged = new bamboo.Dataset(id: response.id)
       console.log "merged id is #{merged.id}"
       cb(merged)
 
@@ -426,7 +431,7 @@ class Dataset
       data: data
     @_run_query "merging datasets #{datasets}", url, false, success_cb, opts
 
-  update: (rows, sync_cb=false)->
+  update: (rows, sync_cb = false)->
     ###
     Updates this dataset with the rows given in {column: value} format.
     Any unspecified columns will result in n/a values.
@@ -464,15 +469,15 @@ dataset_exists = (id)->
   It returns a boolean value.
   ###
   existence = undefined
-  ds = new Dataset({id:id})
-  success_cb  = (a,b,c,d,e) ->
+  ds = new Dataset({id: id})
+  success_cb  = (a, b, c, d, e) ->
     existence = true
     return
   fail_cb     = ->
     existence = false
     return
   opts = {
-    error: fail_cb
+  error: fail_cb
   }
   ds._run_query "existence", "#{ds.bamboo_url()}", false, success_cb, opts
   existence
@@ -489,11 +494,11 @@ is_aggregation = (formula)->
 # load statuses object has key == value. It's an easy-to-reference dictionary
 # used only within this file.
 LS =
-  not_started:    "not_started"
-  queued:         "queued"
-  started:        "started"
-  complete:       "complete"
-  failed:         "failed"
+  not_started: "not_started"
+  queued: "queued"
+  started: "started"
+  complete: "complete"
+  failed: "failed"
 
 @bamboo =
   bamboo_url: bamboo_url
