@@ -778,6 +778,261 @@ describe "Bamboo JS", ->
 
       return
 
+    describe "Dataset Object", ->
+      ds = undefined
+
+      beforeEach ->
+        ds = new bamboo.Dataset({id: dataset_id})
+
+      describe "load_from_url", ->
+        beforeEach ->
+          spyOn(bamboo, 'create_dataset').andCallThrough()
+          ds = new bamboo.Dataset({url: test_data.csv_file_url})
+          return
+
+        it "should call bamboo.create_dataset with the url passed in at construction", ->
+          expect(ds.id).toBeUndefined()
+          expect(ds._ls.from_url).toBeUndefined()
+          ds.load_from_url()
+          expect(bamboo.create_dataset).toHaveBeenCalledWith(test_data.csv_file_url, false)
+          expect(ds.id).toBeDefined()
+          expect(ds._ls.from_url).toBeDefined()
+          return
+
+        it "should call bamboo.create_dataset with the provided url and async as true when specified", ->
+          result = ds.load_from_url test_data.csv_file_merge_url, ()->
+            return
+          expect(bamboo.create_dataset).toHaveBeenCalledWith(test_data.csv_file_merge_url, true)
+          expect(result).toEqual(ds)
+          return
+        return
+
+      describe "query_info", ->
+        beforeEach ->
+          spyOn(bamboo, 'query_info').andCallThrough()
+          return
+
+        it "should call bamboo.query_info with async as false when called without a callback", ->
+          expect(ds.info).toBeUndefined()
+          result = ds.query_info()
+          expect(bamboo.query_info).toHaveBeenCalledWith(dataset_id, false)
+          expect(ds.info).toBeDefined()
+          expect(result).toEqual(ds.info)
+          return
+
+        it "should call bamboo.query_info with async as true if a callback is specified", ->
+          result = ds.query_info ()->
+            return
+          expect(bamboo.query_info).toHaveBeenCalledWith(dataset_id, true)
+          expect(result).toEqual(ds)
+          return
+        return
+
+      describe "summary", ->
+        beforeEach ->
+          spyOn(bamboo, 'summary').andCallThrough()
+          return
+
+        it "calls bamboo.summary with select as all by default", ->
+          expect(ds.summary_result).toBeUndefined()
+          result = ds.summary()
+          expect(bamboo.summary).toHaveBeenCalledWith(dataset_id, "all", null, false)
+          expect(ds.summary_result).toBeDefined()
+          expect(ds._ls.summary_all).toBeDefined()
+          expect(result).toEqual(ds.summary_result)
+          return
+
+        it "calls bamboo.summary with the specified args and async as true if a callback is specified", ->
+          result = ds.summary {"grade": 1}, "sex", ()->
+            return
+          expect(bamboo.summary).toHaveBeenCalledWith(dataset_id, {"grade": 1}, "sex", true)
+          expect(result).toEqual(ds)
+          return
+        return
+
+      describe "query", ->
+        beforeEach ->
+          spyOn(bamboo, 'query').andCallThrough()
+          return
+
+        it "calls bamboo.select with the specified select arg", ->
+          result = ds.select({grade: 1})
+          expect(bamboo.query).toHaveBeenCalledWith(dataset_id, undefined, {"grade": 1}, undefined, false)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds._selects['select_{"grade":1}'])
+          return
+
+        it "calls bamboo.select with the specified select arg and async as true if a callback is specified", ->
+          result = ds.select {"grade": 1}, ()->
+            return
+          expect(bamboo.query).toHaveBeenCalledWith(dataset_id, undefined, {"grade": 1}, undefined, true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+
+        it ".query calls bamboo.query with a filter arg when its provided", ->
+          result = ds.query({"grade": 4})
+          expect(bamboo.query).toHaveBeenCalledWith(dataset_id, {"grade": 4}, undefined, undefined, false)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds._queries['query_{"grade":4}'])
+          return
+
+        it ".query calls bamboo.query with a filter arg when its provided and async as true if a callback is specified", ->
+          result = ds.query {"grade": 4}, ()->
+            return
+          expect(bamboo.query).toHaveBeenCalledWith(dataset_id, {"grade": 4}, undefined, undefined, true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+
+        it ".query_dataset calls bamboo.query with a filter arg when its provided", ->
+          result = ds.query_dataset()
+          expect(bamboo.query).toHaveBeenCalledWith(dataset_id, undefined, undefined, undefined, false)
+          # check synchronous results todo: repeat on above tests
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds.data)
+          return
+
+        it ".query_dataset calls bamboo.query with a filter arg when its provided and async as true if a callback is specified", ->
+          result = ds.query_dataset ()->
+            return
+          expect(bamboo.query).toHaveBeenCalledWith(dataset_id, undefined, undefined, undefined, true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+
+        return
+
+      describe "add_calculation", ->
+        beforeEach ->
+          spyOn(bamboo, 'add_calculation').andCallThrough()
+          return
+
+        it "should call bamboo.add_calculation with name and formula and async as false", ->
+          result = ds.add_calculation("above_3rd_grade", "grade > 3")
+          expect(bamboo.add_calculation).toHaveBeenCalledWith(dataset_id, "above_3rd_grade", "grade > 3", false)
+          expect(result).toBeDefined()
+          expect(result).toEqual('above_3rd_grade')
+          return
+
+        it "should call bamboo.add_calculation with name and formula and async as true if callback is specified", ->
+          result = ds.add_calculation "above_3rd_grade", "grade > 3", ()->
+            return
+          expect(bamboo.add_calculation).toHaveBeenCalledWith(dataset_id, "above_3rd_grade", "grade > 3", true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+        return
+
+      describe "query_calculations", ->
+        beforeEach ->
+          spyOn(bamboo, 'query_calculations').andCallThrough()
+          return
+
+        it "should call bamboo.query_calculations with async as false", ->
+          result = ds.query_calculations()
+          expect(bamboo.query_calculations).toHaveBeenCalledWith(dataset_id, false)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds._calculations)
+          return
+
+        it "should call bamboo.query_calculations with async as true if a callback is specified", ->
+          result = ds.query_calculations ()->
+            return
+          expect(bamboo.query_calculations).toHaveBeenCalledWith(dataset_id, true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+        return
+
+      describe "remove_calculation", ->
+        beforeEach ->
+          spyOn(bamboo, 'remove_calculation').andCallThrough()
+          # todo: create actual calculations for live tests
+          return
+
+        it "should call bamboo.remove_calculation with async as false", ->
+          result = ds.remove_calculation("above_3rd_grade")
+          expect(bamboo.remove_calculation).toHaveBeenCalledWith(dataset_id, "above_3rd_grade", false)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds._calculations)
+          return
+
+        it "should call bamboo.remove_calculation with async as true if a callback is specified", ->
+          result = ds.remove_calculation "above_3rd_grade", ()->
+            return
+          expect(bamboo.remove_calculation).toHaveBeenCalledWith(dataset_id, "above_3rd_grade", true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+        return
+
+      describe "add_aggregations", ->
+        beforeEach ->
+          spyOn(bamboo, 'add_aggregation').andCallThrough()
+          return
+
+        it "should call bamboo.add_aggregation with name, formula and group and async as false", ->
+          result = ds.add_aggregations("total_income", "sum(income)", ["sex"])
+          expect(bamboo.add_aggregation).toHaveBeenCalledWith(dataset_id, "total_income", "sum(income)", ["sex"], false)
+          expect(result).toBeDefined()
+          expect(result).toEqual('total_income')
+          return
+
+        it "should call bamboo.add_calculation with name and formula and async as true if callback is specified", ->
+          result = ds.add_aggregations "total_income", "sum(income)", ["sex"], ()->
+            return
+          expect(bamboo.add_aggregation).toHaveBeenCalledWith(dataset_id, "total_income", "sum(income)", ["sex"], true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+        return
+
+      describe "query_aggregations", ->
+        beforeEach ->
+          spyOn(bamboo, 'query_aggregations').andCallThrough()
+          return
+
+        it "should call bamboo.query_aggregations with async as false", ->
+          result = ds.query_aggregations()
+          expect(bamboo.query_aggregations).toHaveBeenCalledWith(dataset_id, false)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds.aggregations)
+          return
+
+        it "should call bamboo.query_aggregations with async as true if a callback is specified", ->
+          result = ds.query_aggregations ()->
+            return
+          expect(bamboo.query_aggregations).toHaveBeenCalledWith(dataset_id, true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+        return
+
+      describe "remove_aggregations", ->
+        beforeEach ->
+          spyOn(bamboo, 'remove_aggregation').andCallThrough()
+          # todo: create actual aggregations for live tests
+          return
+
+        it "should call bamboo.remove_aggregation with async as false", ->
+          result = ds.remove_aggregations("total_income")
+          expect(bamboo.remove_aggregation).toHaveBeenCalledWith(dataset_id, "total_income", false)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds.aggregations)
+          return
+
+        it "should call bamboo.remove_aggregation with async as true if a callback is specified", ->
+          result = ds.remove_aggregations "total_income", ()->
+            return
+          expect(bamboo.remove_aggregation).toHaveBeenCalledWith(dataset_id, "total_income", true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+        return
+
+      return
+
     return
 
   return

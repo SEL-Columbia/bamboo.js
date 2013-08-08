@@ -71,6 +71,9 @@ _summary = (dataset_id, select = "all", group = null, async)->
   return _run_query(bamboo_url('datasets', dataset_id, 'summary'), async, opts)
 
 _add_calculation = (dataset_id, name, formula, async)->
+  if is_aggregation formula
+    throw new Error "Error: this formula indicates it's aggregation
+                  instead of calculation, please use Dataset.add_aggregation instead"
   opts = {data:
     {}}
   opts.data.name = name
@@ -201,191 +204,175 @@ class Dataset
   load_status: (for_what) ->
     @_ls[for_what] or LS.not_started
 
-  load_from_url: (url = false, sync_cb = false) ->
+  on_success: (for_what, response, sync_cb=false)->
+    log "successfully ran #{for_what} query", @ if dbg()
+    @_ls[for_what] = LS.complete
+    sync_cb.apply @, [response] if !!sync_cb
+    return
+
+  on_failure: (for_what, error, sync_cb=false)->
+    log "failed to ran #{for_what} query", @ if dbg()
+    @_ls[for_what] = LS.failed
+    return
+
+  load_from_url: (url = null, sync_cb = false) ->
     ensure_jquery()
     @url = url if url
     if !@url?
       throw new Error("Missing URL")
     @_ls.from_url = LS.started
-    @_reqs.from_url = $.ajax
-      async: !!sync_cb
-      data:
-        {url: @url}
-      type: 'POST'
-      dataType: 'json'
-      url: bamboo_url('datasets')
-      error: () =>
-        @_ls.from_url = LS.failed
-        return
-      success: (response) =>
+
+    bamboo.create_dataset(@url, !!sync_cb).then (response)=>
         @_ls.from_url = LS.complete
         @extend response
-        log "dataset.load_from_url() response", jsonify response if dbg()
-        sync_cb.apply(@, arguments) if !!sync_cb
+        @on_success("from_url", response, sync_cb)
         return
-    @
-
-  bamboo_url: () ->
-    if !@id?
-      throw new Error("Missing dataset ID. " +
-      "Run 'dataset.load_from_url()'.")
-    bamboo_url("datasets", @id)
-
-  _run_query: (for_what, url, async, cb, opts = {}) ->
-    ensure_jquery()
-    @_ls[for_what] = LS.started
-    opts.async = async unless opts.async?
-    opts.url = url
-    opts.dataType = 'json' unless opts.dataType?
-    opts.success = (response, status, _req) =>
-      log "successfully ran #{for_what} query", @ if dbg()
-      @_ls[for_what] = LS.complete
-      cb.apply(@, [response, status, _req])
-    opts.error = (e) =>
-      log "failed to ran #{for_what} query", @ if dbg()
-      @_ls[for_what] = LS.failed
-    @_reqs[for_what] = $.ajax opts
-    @
+    , ()=>
+        @on_failure("from_url", e, sync_cb)
+        return
+    return @
 
   query_info: (sync_cb = false) ->
-    url = "#{@bamboo_url()}/info"
-    @_run_query "info", url, !!sync_cb, (response, status, _req)->
+    # using bamboo.query_info because of the way we test with spies
+    async = !!sync_cb
+    bamboo.query_info(@id, !!sync_cb).then (response)=>
       @info = response
-      sync_cb.apply @, [response, status, _req] if !!sync_cb
+      @on_success("info", response, sync_cb)
+      return
+    , (e)->
+      @on_failure("info", e, sync_cb)
+      return
+    if async then @ else @info
 
   summary: (summary_select = "all", group = null, sync_cb = false)->
     summary_select_str = if typeof summary_select is "string" then summary_select else JSON.stringify(summary_select)
-    url = "#{@bamboo_url()}/summary?select=#{summary_select_str}"
-    url += "&group=#{group}" if group?
-    async = !!sync_cb
     summary_tmp_id = "summary_#{summary_select_str}"
     summary_tmp_id += "_#{group}" if group?
     @_summaries = {} unless @_summaries?
-    @_run_query summary_tmp_id, url, async, (r, status, _req)->
-      @summary_result = r if summary_select is "all"
-      @_summaries[summary_tmp_id] = r
-      sync_cb.apply @, [r, status, _req] if sync_cb
-    if async then @ else @_summaries[summary_tmp_id]
+    bamboo.summary(@id, summary_select, group, !!sync_cb).then (response)=>
+      @summary_result = response if summary_select is "all"
+      @_summaries[summary_tmp_id] = response
+      @on_success(summary_tmp_id, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(summary_tmp_id, e, sync_cb)
+      return
+    if !!sync_cb then @ else @_summaries[summary_tmp_id]
 
   select: (obj, sync_cb = false) ->
     select_str = jsonify(obj)
     async = !!sync_cb
-    url = "#{@bamboo_url()}?select=#{select_str}"
     select_tmp_id = "select_#{select_str}"
     @_selects = {} unless @_selects?
-    @_run_query select_tmp_id, url, async, (r, status, _req)->
-      @_selects[select_tmp_id] = r
-      sync_cb.apply @, [r, status, _req] if sync_cb
+    bamboo.query(@id, undefined, obj, undefined, async).then (response)=>
+      @_selects[select_tmp_id] = response
+      @on_success(select_tmp_id, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(select_tmp_id, e, sync_cb)
+      return
     if async then @ else @_selects[select_tmp_id]
 
   query: (obj, sync_cb = false) ->
     query_str = jsonify(obj)
     async = !!sync_cb
-    url = "#{@bamboo_url()}?query=#{query_str}"
     query_tmp_id = "query_#{query_str}"
     @_queries = {} unless @_queries?
-    @_run_query query_tmp_id, url, async, (r, status, _req)->
-      @_queries[query_tmp_id] = r
-      sync_cb.apply @, [r, status, _req] if sync_cb
+    bamboo.query(@id, obj, undefined, undefined, async).then (response)=>
+      @_queries[query_tmp_id] = response
+      @on_success(query_tmp_id, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(query_tmp_id, e, sync_cb)
+      return
     if async then @ else @_queries[query_tmp_id]
 
   query_dataset: (sync_cb = false) ->
-    @_run_query "dataset", bamboo_url("datasets", @id), !!sync_cb, (r, status, _req)->
-      @data = r
-      sync_cb.apply @, arguments if !!sync_cb
+    async = !!sync_cb
+    bamboo.query(@id, undefined, undefined, undefined, async).then (response)=>
+      @data = response
+      @on_success("dataset", response, sync_cb)
+      return
+    , (e)=>
+      @on_failure("dataset", e, sync_cb)
+      return
+    if async then @ else @data
 
   add_calculation: (name, formula, sync_cb = false) ->
-    if is_aggregation formula
-      throw new Error "Error: this formula indicates it's aggregation
-              instead of calculation, please use Dataset.add_aggregation instead"
-
-    calc_id   = _uniqueId("calculation")
-    url       = bamboo_url("calculations", @id)
-    data =
-      name: name
-      formula: formula
-    @calculations = [] unless @calculations?
-    success_cb = (response) ->
-      calculation = {
-      name: name,
-      formula: formula
-      }
-      @calculations.push(calculation)
-      sync_cb.apply @, arguments if sync_cb
-      log response.success if dbg()
-    opts =
-      type: 'POST'
-      data: data
-    @_run_query "calculation_#{calc_id}", url, false, success_cb, opts
+    @_calculations = [] unless @_calculations?
+    async = !!sync_cb
+    for_what = "calculation_#{name}"
+    bamboo.add_calculation(@id, name, formula, async).then (response)=>
+      @_calculations.push(name)
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    if async then @ else name
 
   query_calculations: (sync_cb = false) ->
-    @_run_query "calculations", bamboo_url("datasets", @id, "calculations"), false, (r)->
-      @calculations = r
-      sync_cb.apply @, arguments if !!sync_cb
+    async = !!sync_cb
+    for_what = "calculations"
+    bamboo.query_calculations(@id, async).then (response)=>
+      @_calculations = response
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    if async then @ else @_calculations
 
-  #  remove_calculation: (name) ->
-  #    url = bamboo_url("calculations", @id)
-  #    data =
-  #      name: name
-  #    success_cb = (response)-> log response.success if dbg()
-  #    opts =
-  #      type: 'DELETE'
-  #      data: data
-  #    @_run_query "delete calculation under name #{name} in dataset #{@id}",
-  #      url, false, success_cb, opts
-
-  remove_calculation: (name) ->
-    url = bamboo_url("datasets", @id, "calculations", name)
-    success_cb = (response) ->
-      # find the named calculation and remove it from our list
-      calculation = _.find @calculations, (calculation) ->
-        return calculation.name is name
+  remove_calculation: (name, sync_cb = false) ->
+    async = !!sync_cb
+    for_what = "delete calculation with name #{name} in dataset #{@id}"
+    @_calculations = [] unless @_calculations?
+    bamboo.remove_calculation(@id, name, async).then (response)=>
+      calculation = _.find @_calculations, (calc) ->
+        return calc.name is name
       @calculations.pop(calculation) if calculation
-      log response.success if dbg()
-    opts =
-      type: 'DELETE'
-    @_run_query "delete calculation under name #{name} in dataset #{@id}",
-    url, false, success_cb, opts
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    if async then @ else @_calculations
 
   add_aggregations: (name, formula, groups = null, sync_cb = false)->
-    if is_aggregation(formula)
-      agg_id = _uniqueId "aggregation"
-      url = bamboo_url("calculations", @id)
-      data =
-        name: name
-        formula: formula
-      if groups isnt null
-        if groups instanceof Array
-          data['group'] = groups.join()
-        else
-          throw new Error "group must be an array"
-
-      success_cb = (response)->
-        sync_cb.apply(@, arguments) if sync_cb
-        log response.success if dbg()
-      opts =
-        type: 'POST'
-        data: data
-      @_run_query "aggregation_#{agg_id}", url, false, success_cb, opts
-
-    else
-      throw new Error "ill formated aggregation formula, perhaps you are
-              looking for calculation instead of aggregation?"
+    async = !!sync_cb
+    for_what = "aggregation_#{name}"
+    bamboo.add_aggregation(@id, name, formula, groups, async).then (response)=>
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    if async then @ else name
 
   query_aggregations: (sync_cb = false) ->
-    @_run_query "aggregations", bamboo_url("datasets", @id, "aggregations"), !!sync_cb, (r)->
-      @aggregations = r
-      sync_cb.apply @, arguments if !!sync_cb
+    async = !!sync_cb
+    for_what = "aggregations"
+    bamboo.query_aggregations(@id, async).then (response)=>
+      @aggregations = response
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    if async then @ else @aggregations
 
   remove_aggregations: (name, sync_cb = false) ->
-    url = bamboo_url("datasets", @id, "calculations", name)
-    success_cb = (response) ->
-      sync_cb.apply(@, arguments) if !!sync_cb
-      log response.success if dbg()
-    opts =
-      type: 'DELETE'
-    @_run_query "delete aggregation under name #{name} in dataset #{@id}",
-    url, false, success_cb, opts
+    async = !!sync_cb
+    for_what = "delete aggregation under name #{name} in dataset #{@id}"
+    @aggregations = {} unless @aggregations?
+    bamboo.remove_aggregation(@id, name, async).then (response)=>
+      delete @aggregations[name] if @aggregations[name]
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    if async then @ else @aggregations
 
   join: (left, right, on_column, cb)->
     ###
@@ -504,6 +491,7 @@ LS =
   bamboo_url: bamboo_url
   dataset_exists: dataset_exists
   settings: settings
+  Dataset: Dataset
   is_aggregation: is_aggregation
   create_dataset: _create_dataset
   delete_dataset: _delete_dataset
