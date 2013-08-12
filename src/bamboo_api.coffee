@@ -232,17 +232,18 @@ class Dataset
 
   load_from_url: (url = null, sync_cb = false) ->
     ensure_jquery()
+    async = !!sync_cb
     @url = url if url
     if !@url?
       throw new Error("Missing URL")
     @_ls.from_url = LS.started
 
-    bamboo.create_dataset(@url, !!sync_cb).then (response)=>
+    bamboo.create_dataset(@url, async).then (response)=>
         @_ls.from_url = LS.complete
         @extend response
         @on_success("from_url", response, sync_cb)
         return
-    , ()=>
+    , (e)=>
         @on_failure("from_url", e, sync_cb)
         return
     return @
