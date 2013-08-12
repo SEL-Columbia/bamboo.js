@@ -207,6 +207,50 @@ describe "Bamboo JS", ->
 
       return
 
+    describe "Existence", ->
+      it "returns true if a dataset exists", ->
+        exists = undefined
+        runs ->
+          promise = bamboo.dataset_exists(dataset_id)
+          promise.then (response)->
+            exists = response
+            return
+
+        waitsFor ->
+          return exists isnt undefined
+        , "dataset_exists to return", REQUEST_TIME
+
+        runs ->
+          expect(exists).toBe(true)
+          return
+
+        return
+
+      it "returns false if a dataset doesnt exist", ->
+        exists = undefined
+        runs ->
+          promise = bamboo.dataset_exists("12345")
+          promise.then (response)->
+            exists = response
+            return
+
+        waitsFor ->
+          return exists isnt undefined
+        , "dataset_exists to return", REQUEST_TIME
+
+        runs ->
+          expect(exists).toBe(false)
+          return
+
+        return
+
+      it "returns immediately async is false", ->
+        exists = bamboo.dataset_exists(dataset_id, false)
+        expect(exists).toBe(true)
+        return
+
+      return
+
     describe "Query", ->
       it "can query for all the data", ->
         data = undefined
@@ -698,7 +742,7 @@ describe "Bamboo JS", ->
 
         runs ->
           expect(merged_dataset_id).toBeDefined()
-          # wait for joined dataset to be ready then delete
+          # wait for merged dataset to be ready then delete
           retry_count = 0
           merged_dataset_info = {id: merged_dataset_id, state: "pending"}
           data_ready_callback.call(merged_dataset_info)
@@ -1029,6 +1073,144 @@ describe "Bamboo JS", ->
           expect(result).toBeDefined()
           expect(result).toEqual(ds)
           return
+        return
+
+      describe "join", ->
+        dataset_id_to_join = undefined
+
+        beforeEach ->
+          join_dataset_info = undefined
+          spyOn(bamboo, 'join').andCallThrough()
+
+          runs ->
+            bamboo.create_dataset(test_data.csv_file_join_url).then (response)->
+              dataset_id_to_join = response.id
+              return
+            return
+
+          waitsFor ->
+            return  !!dataset_id_to_join
+          , "right hand side datasets to be created", 4000
+
+          # wait for the join dataset to be ready
+          runs ->
+            retry_count = 0
+            join_dataset_info = {id: dataset_id_to_join, state: "pending"}
+            data_ready_callback.call(join_dataset_info)
+            return
+
+          waitsFor ->
+            return join_dataset_info isnt undefined and join_dataset_info.state isnt "pending"
+          , "right hand side dataset to be ready", BAMBOO_WAIT_TIME
+          return
+
+        it "should call bamboo.join with async as false", ->
+          result = ds.join(dataset_id_to_join, "name")
+          expect(bamboo.join).toHaveBeenCalledWith(dataset_id, dataset_id_to_join, "name", false)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds.joins)
+          return
+
+        it "should call bamboo.join with async as true if a callback is specified", ->
+          result = ds.join dataset_id_to_join, "name", ->
+            return
+          expect(bamboo.join).toHaveBeenCalledWith(dataset_id, dataset_id_to_join, "name", true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+
+        return
+
+      describe "merge", ->
+        dataset_id_to_merge = undefined
+
+        beforeEach ->
+          merge_dataset_info = undefined
+          spyOn(bamboo, 'merge').andCallThrough()
+
+          runs ->
+            bamboo.create_dataset(test_data.csv_file_join_url).then (response)->
+              dataset_id_to_merge = response.id
+              return
+            return
+
+          waitsFor ->
+            return  !!dataset_id_to_merge
+          , "right hand side datasets to be created", 4000
+
+          # wait for the merge dataset to be ready
+          runs ->
+            retry_count = 0
+            merge_dataset_info = {id: dataset_id_to_merge, state: "pending"}
+            data_ready_callback.call(merge_dataset_info)
+            return
+
+          waitsFor ->
+            return merge_dataset_info isnt undefined and merge_dataset_info.state isnt "pending"
+          , "right hand side dataset to be ready", BAMBOO_WAIT_TIME
+          return
+
+        it "should call bamboo.merge with async as false", ->
+          result = ds.merge([dataset_id, dataset_id_to_merge])
+          expect(bamboo.merge).toHaveBeenCalledWith([dataset_id, dataset_id_to_merge], false)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+
+        it "should call bamboo.merge with async as true if a callback is specified", ->
+          result = ds.merge [dataset_id, dataset_id_to_merge], ->
+            return
+          expect(bamboo.merge).toHaveBeenCalledWith([dataset_id, dataset_id_to_merge], true)
+          expect(result).toBeDefined()
+          expect(result).toEqual(ds)
+          return
+
+        return
+
+      describe "update", ->
+        beforeEach ->
+          spyOn(bamboo, 'update').andCallThrough()
+          return
+
+        it "should call bamboo.update with async as false", ->
+          update_data =
+            name: "new_student"
+            grade: 1
+            income: 30
+            sex: "M"
+          result = ds.update([update_data])
+          expect(bamboo.update).toHaveBeenCalledWith(dataset_id, [update_data], false)
+          return
+
+        it "should call bamboo.update with async as true if a callback is specified", ->
+          update_data =
+            name: "new_student"
+            grade: 1
+            income: 30
+            sex: "M"
+          result = ds.update [update_data], ()->
+            return
+          expect(bamboo.update).toHaveBeenCalledWith(dataset_id, [update_data], true)
+          return
+
+        return
+
+      describe "delete", ->
+        beforeEach ->
+          spyOn(bamboo, 'delete_dataset').andCallThrough()
+          return
+
+        it "should call bamboo.delete with async as false", ->
+          result = ds.delete()
+          expect(bamboo.delete_dataset).toHaveBeenCalledWith(dataset_id, false)
+          return
+
+        it "should call bamboo.delete with async as true if a callback is specified", ->
+          result = ds.delete ()->
+            return
+          expect(bamboo.delete_dataset).toHaveBeenCalledWith(dataset_id, true)
+          return
+
         return
 
       return

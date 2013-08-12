@@ -54,6 +54,20 @@ _query_info = (dataset_id, async)->
   opts = {}
   return _run_query(bamboo_url('datasets', dataset_id, 'info'), async, opts)
 
+_dataset_exists = (dataset_id, async=true)->
+  deferred = $.Deferred()
+  exists = false
+  ###
+  Queries a dataset's info to check its existence
+  ###
+  bamboo.query_info(dataset_id, async).then (response)=>
+    exists = true
+    deferred.resolve(true)
+    return
+  , ()=>
+    deferred.resolve(false)
+  if async then deferred.promise() else exists
+
 _query = (dataset_id, filter, select, limit, async)->
   opts = {data:
     {}}
@@ -211,6 +225,7 @@ class Dataset
     return
 
   on_failure: (for_what, error, sync_cb=false)->
+    # todo: remove sync_cb arg from here and callers
     log "failed to ran #{for_what} query", @ if dbg()
     @_ls[for_what] = LS.failed
     return
@@ -352,6 +367,7 @@ class Dataset
   query_aggregations: (sync_cb = false) ->
     async = !!sync_cb
     for_what = "aggregations"
+    @aggregations = {} unless @aggregations?
     bamboo.query_aggregations(@id, async).then (response)=>
       @aggregations = response
       @on_success(for_what, response, sync_cb)
@@ -374,7 +390,7 @@ class Dataset
       return
     if async then @ else @aggregations
 
-  join: (left, right, on_column, cb)->
+  join: (right, on_column, sync_cb=false)->
     ###
     Create a new dataset that is the result of a join, where this
     left_dataset is the lefthand side and *right_dataset* is the
@@ -382,92 +398,60 @@ class Dataset
     The column that is joined on must be unique in the righthand side
     and must exist in both datasets.
     ###
-    url = bamboo_url("datasets", "join")
-    data =
-      dataset_id: left
-      other_dataset_id: right
-      on: on_column
-    success_cb = (response)->
-      joined = new bamboo.Dataset(id: response.id)
-      cb.call null, joined
-      log response.success if dbg()
-    opts =
-      type: "POST"
-      data: data
-    @_run_query "joined datasets #{left} and #{right}", url, false, success_cb, opts
+    async = !!sync_cb
+    for_what = "joined datasets #{@id} and #{right}"
+    @joins = [] unless @joins?
+    bamboo.join(@id, right, on_column, async).then (response)=>
+      @joins.push response.id
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    if async then @ else @joins
 
-
-  merge: (datasets, cb)->
+  merge: (datasets, sync_cb=false)->
     ###
     Create a new dataset that is a row-wise merge of those in *datasets*.
     Returns the new merged dataset.
     ###
-    if not (datasets instanceof Array)
-      throw new Error "datasets for merging must be an array"
-    url = bamboo_url('datasets', 'merge')
-    dataset_ids = JSON.stringify(datasets)
-    data =
-      dataset_ids: dataset_ids
-    success_cb = (response)->
-      merged = new bamboo.Dataset(id: response.id)
-      console.log "merged id is #{merged.id}"
-      cb(merged)
-
-    opts =
-      type: "POST"
-      data: data
-    @_run_query "merging datasets #{datasets}", url, false, success_cb, opts
+    async = !!sync_cb
+    for_what = "merging datasets #{datasets}"
+    bamboo.merge(datasets, async).then (response)=>
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    return @
 
   update: (rows, sync_cb = false)->
     ###
     Updates this dataset with the rows given in {column: value} format.
     Any unspecified columns will result in n/a values.
     ###
-    if not (rows instanceof Array)
-      throw new Error "rows must be an array"
-    if rows.length is 0
-      throw new Error "rows cannot be empty"
-    url = bamboo_url('datasets', @id)
-    # massage rows
-    jsonified_rows = JSON.stringify rows
-    data =
-      update: jsonified_rows
-    success_cb = (response)->
-      sync_cb.apply @, arguments if sync_cb
-      log response.success if dbg()
-    opts =
-      type: "PUT"
-      data: data
-    @_run_query "updating dataset #{@id}", url, !!sync_cb, success_cb, opts
+    async = !!sync_cb
+    for_what = "updating dataset #{@id}"
+    bamboo.update(@id, rows, async).then (response)=>
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    return @
 
-  delete: ()->
-    complete = false
-    $.ajax
-      type: "DELETE"
-      url: @bamboo_url()
-      async: false
-      success: -> complete = true
-      error: -> complete = false
-    complete
-
-dataset_exists = (id)->
-  ###
-  Not perfect, but this could be a nice way to determine if a dataset exists.
-  It returns a boolean value.
-  ###
-  existence = undefined
-  ds = new Dataset({id: id})
-  success_cb  = (a, b, c, d, e) ->
-    existence = true
-    return
-  fail_cb     = ->
-    existence = false
-    return
-  opts = {
-  error: fail_cb
-  }
-  ds._run_query "existence", "#{ds.bamboo_url()}", false, success_cb, opts
-  existence
+  delete: (sync_cb=false)->
+    async = !!sync_cb
+    for_what = "deleting dataset #{@id}"
+    deleted = false
+    bamboo.delete_dataset(@id, async).then (response)=>
+      deleted = true
+      @on_success(for_what, response, sync_cb)
+      return
+    , (e)=>
+      @on_failure(for_what, e, sync_cb)
+      return
+    if async then @ else deleted
 
 is_aggregation = (formula)->
   keyword_sel = allowed_aggregation.join "|"
@@ -489,13 +473,13 @@ LS =
 
 @bamboo =
   bamboo_url: bamboo_url
-  dataset_exists: dataset_exists
   settings: settings
   Dataset: Dataset
   is_aggregation: is_aggregation
   create_dataset: _create_dataset
   delete_dataset: _delete_dataset
   query_info: _query_info
+  dataset_exists: _dataset_exists
   summary: _summary
   query: _query
   add_calculation: _add_calculation
